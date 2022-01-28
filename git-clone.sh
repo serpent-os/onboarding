@@ -11,7 +11,7 @@ RUN_DIR="${PWD}"
 
 function failMsg()
 {
-        echo $*
+        echo -e $*
         exit 1
 }
 
