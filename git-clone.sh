@@ -34,9 +34,9 @@ function checkPrereqs()
     done
 
     if [[ ${checkPrereqs} -gt 0 ]]; then
-       failMsg "Please ensure that necessary tools are installed."
+       failMsg "\nPlease ensure that necessary tools are installed.\n"
     else
-       echo -e "Found all necessary tools, continuing...\n"
+       echo -e "\nFound all necessary tools, continuing...\n"
     fi
 }
 
@@ -44,8 +44,9 @@ checkGit=0
 # Will likely fail if the repo path exists locally, so this may not be a good solution
 function gitClone()
 {
-    echo -e "\nCloning ${1}..."
-    git clone ${1} || checkGit=1 echo "- failed to clone ${1}?"
+    echo -e "Cloning ${1}..."
+    git clone --recurse-submodules ${1} || { echo "- failed to clone ${1}?" && checkGit=1; }
+    echo ""
 }
 
 # Run checks
@@ -76,5 +77,6 @@ done
 
 [[ checkGit -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
 
-echo -e "\nList of directories in ${RUN_DIR}:"
+echo -e "List of directories in ${RUN_DIR}:\n"
 ls -1F --group-directories-first ${RUN_DIR}
+echo ""
