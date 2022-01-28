@@ -16,7 +16,7 @@ We use `meson` (with `dub` as a fallback) and `ldc2` to build our binaries. We u
 
 We use a flat repository structure where all Dlang submodules are expected to be checked out concurrently.
 
-This forces a "lockstep" development methodology where whereever you have checked out in each submodule is what any given binary will be built against.
+This forces a "lockstep" development methodology, which means that whatever is currently checked out in each submodule is what any given binary will be built against.
 
 This also implies that all submodules will need to be kept in sync with the features that are being worked on (preferrably using identical topic branch names).
 
@@ -34,7 +34,7 @@ git clone https://gitlab.com/serpent-os/core/common.git
 # for Serpent OS team members with commit access
 # git clone git@gitlab.com:serpent-os/core/common.git 
 
-common/git-clone.sh
+common/git-clone.sh --https # drop the --https argument if you use ssh
 ```
 
 ## Support
