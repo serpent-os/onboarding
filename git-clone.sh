@@ -51,6 +51,40 @@ function checkPrereqs()
     fi
 }
 
+checkTransport ()
+{
+    local TEST_DIR="/tmp/serpent-os"
+    # We need a clean dir
+    if [[ -d ${TEST_DIR} ]]; then
+        rm -rf "${TEST_DIR}" || failMsg "Please remove '/tmp/serpent-os before running $0 again.\n"
+    fi
+    mkdir -pv "${TEST_DIR}" || failMsg "Cannot create ${TEST_DIR}, please check permissions.\n"
+    pushd "${TEST_DIR}"
+
+    # try to fetch via ssh
+    local REPO="${CORE_PREFIX}/onboarding.git"
+    echo -e "\nAttempting to clone ${REPO}...\n"
+    git clone "${REPO}"
+
+    # We need a plan B
+    if [[ ! $? -eq 0 ]]; then
+        echo -e "SSH transport didn't appear to work; switching to https transport...\n"
+        CORE_PREFIX="https://gitlab.com/serpent-os/core"
+        REPO="${CORE_PREFIX}/onboarding.git"
+        gitClone ${REPO}
+    fi
+
+    # Unconditionally delete the test dir
+    popd
+    rm -rf "${TEST_DIR}" || failMsg "Failed to clean up ${TEST_DIR}, please remove manually.\n"
+
+    if [[ checkGit -gt 0 ]]; then
+        failMsg "Couldn't clone ${REPO}, giving up."
+    fi
+
+    # If we make it this far, checkGit is 0
+}
+
 checkGit=0
 # Will likely fail if the repo path exists locally, so this may not be a good solution
 function gitClone()
@@ -68,21 +102,18 @@ function main ()
     checkHelp
     # Run checks
     checkPrereqs
-
-    # Set proper upstream core subgroup URI prefix (https by default)
-    CORE_PREFIX="https://gitlab.com/serpent-os/core"
-    # check $0 for git-clone-ssh.sh suffix
-    if [[ "$0" =~ "git-clone-ssh.sh" ]]; then
-        CORE_PREFIX="git@gitlab.com:serpent-os/core"
-    fi
+    # Get some sort of transportDoes SSH work?
+    checkTransport
 
     if [[ -z "${CORE_PREFIX}" ]]; then
-        failMsg "\nCORE_PREFIX nees to be set to a valid upstream URI.\n"
+        failMsg "\nCORE_PREFIX needs to be set to a valid upstream URI.\n"
     else
-        echo -e "Using ${CORE_PREFIX} as upstream prefix URI...\n"
+        echo -e "\nUsing ${CORE_PREFIX} as upstream prefix URI...\n"
     fi
 
     CORE_REPOS=(boulder moss moss-config moss-container moss-core moss-db moss-deps moss-fetcher moss-format moss-vendor serpent-style)
+
+    # Test whether SSH transport works
 
     for repo in ${CORE_REPOS[@]}; do
         gitClone "${CORE_PREFIX}/${repo}.git"
@@ -95,5 +126,6 @@ function main ()
     echo ""
 }
 
-# Let's go
+# Try SSH transport first
+CORE_PREFIX="git@gitlab.com:serpent-os/core"
 main
