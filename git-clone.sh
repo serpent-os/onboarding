@@ -88,7 +88,7 @@ function main ()
         gitClone "${repo}"
     done
 
-    [[ checkGit -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
+    [[ ${checkGit} -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
 
     echo -e "List of directories in ${RUN_DIR}:\n"
     ls -1F --group-directories-first ${RUN_DIR}
