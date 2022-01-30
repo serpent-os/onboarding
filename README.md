@@ -1,6 +1,6 @@
 ## Description
 
-Shared scripts and onboarding documentation for the rest of the Serpent OS tooling.
+Onboarding documentation and initial clone script for the Serpent OS tooling.
 
 For a general overview of the goals of Serpent OS and how to get in touch, see our [website](https://serpentos.com).
 
@@ -20,6 +20,8 @@ This forces a "lockstep" development methodology, which means that whatever is c
 
 This also implies that all submodules will need to be kept in sync with the features that are being worked on (preferrably using identical topic branch names).
 
+The only place we use "full" git submodules is in `moss-vendor`.
+
 ### Example
 
 Here, all relevant Serpent OS modules will be checked out under `~/repos/serpent-os/`
@@ -29,12 +31,7 @@ Here, all relevant Serpent OS modules will be checked out under `~/repos/serpent
 mkdir ~/repos/serpent-os/
 cd ~/repos/serpent-os/
 
-# for 3rd party contributors without commit access
-git clone https://gitlab.com/serpent-os/core/common.git
-# for Serpent OS team members with commit access
-# git clone git@gitlab.com:serpent-os/core/common.git 
-
-common/git-clone.sh --https # drop the --https argument if you use ssh
+curl https://gitlab.com/serpent-os/core/onboarding/-/raw/main/git-clone.sh |bash
 ```
 
 ## Support
