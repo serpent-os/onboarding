@@ -18,10 +18,12 @@ function failMsg()
 # Support "-h", "--help" and "-?" for convenience
 function checkHelp()
 {
-    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "-?" ]]; then
-        echo "Usage: git-clone-https.sh OR git-clone-ssh.sh"
+    if [[ "-h" =~ "$1" || "--help" =~ "$1" || "-?" =~ "$1" ]]; then
+        echo "Usage: git-clone.sh"
         echo ""
-        echo -e "Unless you have commit access to the 'gitlab.com/serpent-os/core' subgroup, use 'git-clone-https.sh'.\n"
+        echo "Clone all current Serpent OS (https://serpentos.com) tool repositories."
+        echo ""
+        echo -e "Please run the script from an empty serpent-os/ base directory.\n"
         exit 0
     fi
 }
