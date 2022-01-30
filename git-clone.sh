@@ -54,9 +54,20 @@ checkGit=0
 # Will likely fail if the repo path exists locally, so this may not be a good solution
 function gitClone()
 {
-    echo -e "Cloning ${1}..."
-    git clone --recurse-submodules ${1} || { echo "- failed to clone ${1}?" && checkGit=1; }
-    echo ""
+    echo -e "Cloning ${HTTPS_PREFIX}/${1}.git..."
+    git clone --recurse-submodules "${HTTPS_PREFIX}/${1}.git"
+    # Only set up push URI on successful clone
+    if [[ $? -eq 0 ]]; then
+        echo -e "\nSetting up SSH push URI...\n"
+        pushd "${1}"
+        git remote set-url --push origin "${SSH_PREFIX}/${1}.git"
+        git remote -v
+        popd
+        echo ""
+    else
+        echo -e "\n- failed to clone ${1}, not attempting to set push URI.\n"
+        checkGit=1
+    fi
 }
 
 function main ()
@@ -74,13 +85,7 @@ function main ()
     CORE_REPOS=(boulder moss moss-config moss-container moss-core moss-db moss-deps moss-fetcher moss-format moss-vendor serpent-style)
 
     for repo in ${CORE_REPOS[@]}; do
-        gitClone "${HTTPS_PREFIX}/${repo}.git"
-        echo -e "Setting up SSH push URI...\n"
-        pushd ${repo}
-        git remote set-url --push origin "${SSH_PREFIX}/${repo}.git"
-        git remote -v
-        popd
-        echo ""
+        gitClone "${repo}"
     done
 
     [[ checkGit -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
