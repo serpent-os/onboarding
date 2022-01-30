@@ -9,23 +9,20 @@
 
 RUN_DIR="${PWD}"
 
+# Be helpful if the user supplies an argument
+if [[ -n "$1" ]]; then
+    echo "Usage: git-clone.sh"
+    echo ""
+    echo "Clone all current Serpent OS (https://serpentos.com) tool repositories."
+    echo ""
+    echo -e "Please run the script from an empty serpent-os/ base directory.\n"
+    exit 0
+fi
+
 function failMsg()
 {
         echo -e $*
         exit 1
-}
-
-# Support "-h", "--help" and "-?" for convenience
-function checkHelp()
-{
-    if [[ "-h" =~ "$1" || "--help" =~ "$1" || "-?" =~ "$1" ]]; then
-        echo "Usage: git-clone.sh"
-        echo ""
-        echo "Clone all current Serpent OS (https://serpentos.com) tool repositories."
-        echo ""
-        echo -e "Please run the script from an empty serpent-os/ base directory.\n"
-        exit 0
-    fi
 }
 
 # Check for all tools before bailing
@@ -53,40 +50,6 @@ function checkPrereqs()
     fi
 }
 
-checkTransport ()
-{
-    local TEST_DIR="/tmp/serpent-os"
-    # We need a clean dir
-    if [[ -d ${TEST_DIR} ]]; then
-        rm -rf "${TEST_DIR}" || failMsg "Please remove '/tmp/serpent-os before running $0 again.\n"
-    fi
-    mkdir -pv "${TEST_DIR}" || failMsg "Cannot create ${TEST_DIR}, please check permissions.\n"
-    pushd "${TEST_DIR}"
-
-    # try to fetch via ssh
-    local REPO="${CORE_PREFIX}/onboarding.git"
-    echo -e "\nAttempting to clone ${REPO}...\n"
-    git clone "${REPO}"
-
-    # We need a plan B
-    if [[ ! $? -eq 0 ]]; then
-        echo -e "SSH transport didn't appear to work; switching to https transport...\n"
-        CORE_PREFIX="https://gitlab.com/serpent-os/core"
-        REPO="${CORE_PREFIX}/onboarding.git"
-        gitClone ${REPO}
-    fi
-
-    # Unconditionally delete the test dir
-    popd
-    rm -rf "${TEST_DIR}" || failMsg "Failed to clean up ${TEST_DIR}, please remove manually.\n"
-
-    if [[ checkGit -gt 0 ]]; then
-        failMsg "Couldn't clone ${REPO}, giving up."
-    fi
-
-    # If we make it this far, checkGit is 0
-}
-
 checkGit=0
 # Will likely fail if the repo path exists locally, so this may not be a good solution
 function gitClone()
@@ -96,29 +59,28 @@ function gitClone()
     echo ""
 }
 
-
-# Use ssh by default for convenience -- normal users will error out here
 function main ()
 {
-    # Because not doing so sucks
-    checkHelp
     # Run checks
     checkPrereqs
-    # Get some sort of transportDoes SSH work?
-    checkTransport
 
-    if [[ -z "${CORE_PREFIX}" ]]; then
-        failMsg "\nCORE_PREFIX needs to be set to a valid upstream URI.\n"
-    else
-        echo -e "\nUsing ${CORE_PREFIX} as upstream prefix URI...\n"
-    fi
+    # Download via HTTPS (negotiates faster than SSH), push via SSH
+    SSH_PREFIX="git@gitlab.com:serpent-os/core"
+    HTTPS_PREFIX="https://gitlab.com/serpent-os/core"
+
+    echo -e "Using ${HTTPS_PREFIX} as base pull URI...\n"
+    echo -e "Using ${SSH_PREFIX} as base push URI...\n"
 
     CORE_REPOS=(boulder moss moss-config moss-container moss-core moss-db moss-deps moss-fetcher moss-format moss-vendor serpent-style)
 
-    # Test whether SSH transport works
-
     for repo in ${CORE_REPOS[@]}; do
-        gitClone "${CORE_PREFIX}/${repo}.git"
+        gitClone "${HTTPS_PREFIX}/${repo}.git"
+        echo -e "Setting up SSH push URI...\n"
+        pushd ${repo}
+        git remote set-url --push origin "${SSH_PREFIX}/${repo}.git"
+        git remote -v
+        popd
+        echo ""
     done
 
     [[ checkGit -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
@@ -128,6 +90,4 @@ function main ()
     echo ""
 }
 
-# Try SSH transport first
-CORE_PREFIX="git@gitlab.com:serpent-os/core"
 main
