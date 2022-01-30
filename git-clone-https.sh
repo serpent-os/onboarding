@@ -19,9 +19,9 @@ function failMsg()
 function checkHelp()
 {
     if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "-?" ]]; then
-        echo "Usage: git-clone.sh [--https]"
+        echo "Usage: git-clone-https.sh OR git-clone-ssh.sh"
         echo ""
-        echo -e "Unless you have commit access to the 'gitlab.com/serpent-os/core' subgroup, use the '--https' argument.\n"
+        echo -e "Unless you have commit access to the 'gitlab.com/serpent-os/core' subgroup, use 'git-clone-https.sh'.\n"
         exit 0
     fi
 }
@@ -60,29 +60,40 @@ function gitClone()
     echo ""
 }
 
-# Because not doing so sucks
-checkHelp
-# Run checks
-checkPrereqs
 
 # Use ssh by default for convenience -- normal users will error out here
-CORE_PREFIX="git@gitlab.com:serpent-os/core"
+function main ()
+{
+    # Because not doing so sucks
+    checkHelp
+    # Run checks
+    checkPrereqs
 
-if [[ ${1} == '--https' ]]; then
-    echo -e "Option --https was supplied, using https for git clone...\n"
+    # Set proper upstream core subgroup URI prefix (https by default)
     CORE_PREFIX="https://gitlab.com/serpent-os/core"
-else
-    echo -e "Option --https was NOT supplied, using ssh for git clone...\n"
-fi
+    # check $0 for git-clone-ssh.sh suffix
+    if [[ "$0" =~ "git-clone-ssh.sh" ]]; then
+        CORE_PREFIX="git@gitlab.com:serpent-os/core"
+    fi
 
-CORE_REPOS=(boulder moss moss-config moss-container moss-core moss-db moss-deps moss-fetcher moss-format moss-vendor serpent-style)
+    if [[ -z "${CORE_PREFIX}" ]]; then
+        failMsg "\nCORE_PREFIX nees to be set to a valid upstream URI.\n"
+    else
+        echo -e "Using ${CORE_PREFIX} as upstream prefix URI...\n"
+    fi
 
-for repo in ${CORE_REPOS[@]}; do
-    gitClone "${CORE_PREFIX}/${repo}.git"
-done
+    CORE_REPOS=(boulder moss moss-config moss-container moss-core moss-db moss-deps moss-fetcher moss-format moss-vendor serpent-style)
 
-[[ checkGit -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
+    for repo in ${CORE_REPOS[@]}; do
+        gitClone "${CORE_PREFIX}/${repo}.git"
+    done
 
-echo -e "List of directories in ${RUN_DIR}:\n"
-ls -1F --group-directories-first ${RUN_DIR}
-echo ""
+    [[ checkGit -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
+
+    echo -e "List of directories in ${RUN_DIR}:\n"
+    ls -1F --group-directories-first ${RUN_DIR}
+    echo ""
+}
+
+# Let's go
+main
