@@ -58,11 +58,9 @@ function gitClone()
     git clone --recurse-submodules "${HTTPS_PREFIX}/${1}.git"
     # Only set up push URI on successful clone
     if [[ $? -eq 0 ]]; then
-        echo -e "\nSetting up SSH push URI...\n"
-        pushd "${1}"
-        git remote set-url --push origin "${SSH_PREFIX}/${1}.git"
-        git remote -v
-        popd
+        echo -e "\nSetting up ${1} SSH push URI...\n"
+        git -C "${1}" remote set-url --push origin "${SSH_PREFIX}/${1}.git"
+        git -C "${1}" remote -v
         echo ""
     else
         echo -e "\n- failed to clone ${1}, not attempting to set push URI.\n"
@@ -79,8 +77,8 @@ function main ()
     SSH_PREFIX="git@gitlab.com:serpent-os/core"
     HTTPS_PREFIX="https://gitlab.com/serpent-os/core"
 
-    echo -e "Using ${HTTPS_PREFIX} as base pull URI...\n"
-    echo -e "Using ${SSH_PREFIX} as base push URI...\n"
+    echo -e "Base pull URI: ${HTTPS_PREFIX}"
+    echo -e "Base push URI: ${SSH_PREFIX}\n"
 
     CORE_REPOS=(boulder moss moss-config moss-container moss-core moss-db moss-deps moss-fetcher moss-format moss-vendor serpent-style)
 
