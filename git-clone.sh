@@ -80,7 +80,18 @@ function main ()
     echo -e "Base pull URI: ${HTTPS_PREFIX}"
     echo -e "Base push URI: ${SSH_PREFIX}\n"
 
-    CORE_REPOS=(boulder moss moss-config moss-container moss-core moss-db moss-deps moss-fetcher moss-format moss-vendor serpent-style)
+    CORE_REPOS=(
+        boulder
+        moss
+        moss-config
+        moss-container
+        moss-core
+        moss-db
+        moss-deps
+        moss-fetcher
+        moss-format
+        moss-vendor
+    )
 
     for repo in ${CORE_REPOS[@]}; do
         gitClone "${repo}"
