@@ -6,25 +6,25 @@ For a general overview of the goals of Serpent OS and how to get in touch, see o
 
 ## Onboarding
 
-Serpent OS tooling is written primarily in Dlang.
+Serpent OS tooling is written primarily in [Dlang](https://dlang.org/).
 
 ### Prerequisites
 
-We use `meson` (with `dub` as a fallback) and `ldc2` to build our binaries. We use `git` for development.
+We use [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our binaries. We use [`git`](https://git-scm.com/) to manage development.
 
 ### Repo structure
 
-We use a flat repository structure where all Dlang submodules are expected to be checked out concurrently.
+We use a flat repository structure where all Dlang `meson`-controlled subprojects are expected to be checked out concurrently.
 
-This forces a "lockstep" development methodology, which means that whatever is currently checked out in each submodule is what any given binary will be built against.
+This forces a "lockstep" development methodology, which means that whatever is currently checked out in each subproject is what any given binary will be built against.
 
-This also implies that all submodules will need to be kept in sync with the features that are being worked on (preferrably using identical topic branch names).
+This also implies that all subprojects will need to be kept in sync with the features that are being worked on (preferrably using identical topic branch names).
 
 The only place we use "full" git submodules is in `moss-vendor`.
 
 ### Example
 
-Here, all relevant Serpent OS modules will be checked out under `~/repos/serpent-os/`
+Here, all relevant Serpent OS subprojects will be checked out under `~/repos/serpent-os/`
 
 ```
 # Initial setup
