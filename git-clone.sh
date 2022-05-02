@@ -11,18 +11,22 @@ RUN_DIR="${PWD}"
 
 # Be helpful if the user supplies an argument
 if [[ -n "$1" ]]; then
-    echo "Usage: git-clone.sh"
-    echo ""
-    echo "Clone all current Serpent OS (https://serpentos.com) tool repositories."
-    echo ""
-    echo -e "Please run the script from an empty serpent-os/ base directory.\n"
+    cat << EOF
+
+Usage: git-clone.sh"
+
+Clone all current Serpent OS (https://serpentos.com) tool repositories.
+
+Please run the script from an empty serpent-os/ base directory
+
+EOF
     exit 0
 fi
 
 function failMsg()
 {
-        echo -e $*
-        exit 1
+    echo -e "$*"
+    exit 1
 }
 
 # Check for all tools before bailing
@@ -51,6 +55,7 @@ function checkPrereqs()
 }
 
 checkGit=0
+failClone=()
 # Will likely fail if the repo path exists locally, so this may not be a good solution
 function gitClone()
 {
@@ -64,6 +69,7 @@ function gitClone()
         echo ""
     else
         echo -e "\n- failed to clone ${1}, not attempting to set push URI.\n"
+        failClone+=("${1}")
         checkGit=1
     fi
 }
@@ -97,7 +103,7 @@ function main ()
         gitClone "${repo}"
     done
 
-    [[ ${checkGit} -gt 0 ]] && failMsg "One or more git repositories couldn't be cloned."
+    [[ ${checkGit} -gt 0 ]] && failMsg "ERROR:\n\nFailed to clone:\n\n${failClone[@]} !"
 
     echo -e "List of directories in ${RUN_DIR}:\n"
     ls -1F --group-directories-first ${RUN_DIR}
