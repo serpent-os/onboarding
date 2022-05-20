@@ -14,7 +14,7 @@ We use [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fa
 
 We use [`git`](https://git-scm.com/) to manage development.
 
-We use [`dfmt`](https://github.com/dlang-community/dfmt) to format our code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation=) for how to build it with ldc. Our scripts assume that `dfmt` is available somewhere in `$PATH`.
+We use [`dfmt`](https://github.com/dlang-community/dfmt) to format our code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with ldc. Our scripts assume that `dfmt` is available somewhere in `$PATH`.
 
 We use the python module `codespell` for spell checking. Install it from your distribution's package manager.
 
