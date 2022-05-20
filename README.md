@@ -12,6 +12,20 @@ Serpent OS tooling is written primarily in [Dlang](https://dlang.org/).
 
 We use [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our binaries. We use [`git`](https://git-scm.com/) to manage development.
 
+We use [`dfmt`](https://github.com/dlang-community/dfmt) to format our code consistently. Consult the `dfmt` README for how to build it with ldc. Our scripts assume that `dfmt` is available somewhere in `$PATH`.
+
+We use the python module `codespell` for spell checking. Install it from your distribution's package manager.
+
+#### Dlang Toolchain installation
+
+The currently recommended way to install the Dlang toolchain is to use the official install script:
+
+    curl -fsS https://dlang.org/install.sh | bash -s ldc
+
+Remember to source the appropriate environment initialisation from your preferred shell's user config file.
+
+We tend to follow the newest upstream version of ldc quite closely.
+
 ### Repo structure
 
 We use a flat repository structure where all Dlang `meson`-controlled subprojects are expected to be checked out concurrently.
