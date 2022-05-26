@@ -50,6 +50,16 @@ cd ~/repos/serpent-os/
 curl https://gitlab.com/serpent-os/core/onboarding/-/raw/main/git-clone.sh |bash
 ```
 
+### Serpent tooling build order
+
+To get started packaging with the current pre-alpha quality serpent tooling, the following serpent tools need to be built in the order listed below:
+
+- [`moss`](https://gitlab.com/serpent-os/core/moss) (our system software management tool)
+- [`moss-container`](https://gitlab.com/serpent-os/core/moss-container) (our lightweight container tool)
+- [`boulder`](https://gitlab.com/serpent-os/core/boulder) (our system software build tool)
+
+See their respective READMEs for build instructions and prerequisites.
+
 ## Support
 
 Please reference the website for instructions on how to get in touch with the Serpent OS developers.
