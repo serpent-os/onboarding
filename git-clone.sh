@@ -52,7 +52,7 @@ function checkPrereqs()
     echo -e "\nChecking for necessary tools..."
     #'all keys in the bin associative array'
     for b in "${!bin[@]}" ; do
-        command -v "${bin[$b]}" 2>&1 > /dev/null
+        command -v "${bin[$b]}" > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
             echo "- ${b} (${bin[$b]}) not found in PATH?"
             checkPrereqs=1
@@ -69,7 +69,7 @@ function checkPrereqs()
     lib[zstd]=libzstd.so.1
 
     for l in ${!lib[@]}; do
-        find /usr/lib* -name ${lib[$l]} 2>&1 > /dev/null
+        find /usr/lib* -name ${lib[$l]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
             echo "- ${l} library (${lib[$l]}) not found?"
             checkPrereqs=1
@@ -85,7 +85,7 @@ function checkPrereqs()
     header[zstd]='zstd.h'
 
     for h in ${!lib[@]}; do
-        find /usr/include -name ${lib[$h]} 2>&1 > /dev/null
+        find /usr/include -name ${lib[$h]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
             echo "- ${h} headers (${header[$h]}) not found?"
             checkPrereqs=1
