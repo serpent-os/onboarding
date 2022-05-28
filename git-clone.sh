@@ -38,6 +38,8 @@ function checkPrereqs()
 
     # Bash associative arrays are well suited for this kind of thing
     declare -A bin
+    bin['pkg-config tool']=pkg-config
+    bin['Binutils']=ld
     bin['C compiler']=cc
     bin['CMake build tool']=cmake
     bin['Codespell python tool']=codespell
@@ -69,7 +71,7 @@ function checkPrereqs()
     lib[zstd]=libzstd.so.1
 
     for l in ${!lib[@]}; do
-        find /usr/lib* -name ${lib[$l]} > /dev/null 2>&1
+        find /usr/lib{,64} -name ${lib[$l]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
             echo "- ${l} library (${lib[$l]}) not found?"
             checkPrereqs=1
@@ -78,19 +80,37 @@ function checkPrereqs()
         fi
     done
 
-    declare -A header
-    header[curl]='curl/curl.h'
-    header[rocksdb]='rocksdb/c.h'
-    header[xxhash]='xxh3.h'
-    header[zstd]='zstd.h'
+    # Key is the .pc name (without extension) -- e.g. libcurl.pc -> libcurl
+    # Value is the invocation parameters for a successful pkg-config match
+    # FIXME: Determine and set correct minimum versions
+    declare -A pc
+    pc[libcurl]='--atleast-version=7.5'
+    pc[libxxhash]='--atleast-version=0.0.1'
+    pc[libzstd]='--atleast-version=1'
+    pc[rocksdb]='--atleast-version=6.22'
 
-    for h in ${!lib[@]}; do
-        find /usr/include -name ${lib[$h]} > /dev/null 2>&1
+    for p in ${!pc[@]}; do
+        pkg-config ${pc[$p]} ${p} #> /dev/null 2>&1
+        if [[ ! $? -eq 0 ]]; then
+            echo "- ${p}.pc file (typically included in a -devel package) not found?"
+            checkPrereqs=1
+        else
+            echo "- found ${p}.pc file"
+        fi
+    done
+
+    # For packages which typically don't have .pc files
+    declare -A header
+    header[kernel]='linux/elf.h'
+    header[glibc]='gnu/lib-names-64.h'
+
+    for h in ${!header[@]}; do
+        find /usr/include -name ${header[$h]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
             echo "- ${h} headers (${header[$h]}) not found?"
             checkPrereqs=1
         else
-            echo "- found ${h} headers (${header[$h]})"
+            echo "- found ${h} headers (/usr/include/${header[$h]})"
         fi
     done
 
