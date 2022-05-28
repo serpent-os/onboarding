@@ -13,7 +13,7 @@ RUN_DIR="${PWD}"
 if [[ -n "$1" ]]; then
     cat << EOF
 
-Usage: git-clone.sh"
+Usage: git-clone.sh
 
 Clone all current Serpent OS (https://serpentos.com) tool repositories.
 
@@ -29,28 +29,75 @@ function failMsg()
     exit 1
 }
 
-# Check for all tools before bailing
+# Check for all tools, libraries and headers before bailing
 checkPrereqs=0
 function checkPrereqs()
 {
     # Check that the script was run from the shared serpent-os/ dir and not from a git-controlled dir
     [[ -d .git/ ]] && failMsg "Found a .git/ dir -- please run ${0} from the (unversioned) base serpent-os/ dir."
 
+    # Bash associative arrays are well suited for this kind of thing
+    declare -A bin
+    bin['C compiler']=cc
+    bin['CMake build tool']=cmake
+    bin['Codespell python tool']=codespell
+    bin['Dlang code formatter']=dfmt
+    bin['Dlang package manager']=dub
+    bin['GNU Awk interpreter']=gawk
+    bin['Git version control tool']=git
+    bin['LDC D compiler']=ldc2
+    bin['Meson build tool']=meson
+    bin['Ninja build tool']=ninja
+
     echo -e "\nChecking for necessary tools..."
-    for tool in dub git ldc2 meson; do
-        command -v ${tool} 2>&1 > /dev/null
+    #'all keys in the bin associative array'
+    for b in "${!bin[@]}" ; do
+        command -v "${bin[$b]}" 2>&1 > /dev/null
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${tool} not found? Please install it."
+            echo "- ${b} (${bin[$b]}) not found in PATH?"
             checkPrereqs=1
         else
-            echo "- found ${tool}"
+            echo "- found ${b} (${bin[$b]})"
+        fi
+    done
+
+    echo "Checking for necessary libraries and development headers..."
+    declare -A lib
+    lib[curl]=libcurl.so.4
+    lib[rocksdb]=librocksdb.so.6
+    lib[xxhash]=libxxhash.so.0
+    lib[zstd]=libzstd.so.1
+
+    for l in ${!lib[@]}; do
+        find /usr/lib* -name ${lib[$l]} 2>&1 > /dev/null
+        if [[ ! $? -eq 0 ]]; then
+            echo "- ${l} library (${lib[$l]}) not found?"
+            checkPrereqs=1
+        else
+            echo "- found ${l} library (${lib[$l]})"
+        fi
+    done
+
+    declare -A header
+    header[curl]='curl/curl.h'
+    header[rocksdb]='rocksdb/c.h'
+    header[xxhash]='xxh3.h'
+    header[zstd]='zstd.h'
+
+    for h in ${!lib[@]}; do
+        find /usr/include -name ${lib[$h]} 2>&1 > /dev/null
+        if [[ ! $? -eq 0 ]]; then
+            echo "- ${h} headers (${header[$h]}) not found?"
+            checkPrereqs=1
+        else
+            echo "- found ${h} headers (${header[$h]})"
         fi
     done
 
     if [[ ${checkPrereqs} -gt 0 ]]; then
-       failMsg "\nPlease ensure that necessary tools are installed.\n"
+        failMsg "\nPlease ensure that all necessary tools, libraries and headers are installed.\n"
     else
-       echo -e "\nFound all necessary tools, continuing...\n"
+        echo -e "\nFound all necessary tools, libraries and headers.\n"
     fi
 }
 
