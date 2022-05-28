@@ -90,9 +90,9 @@ function checkPrereqs()
     pc[rocksdb]='--atleast-version=6.22'
 
     for p in ${!pc[@]}; do
-        pkg-config ${pc[$p]} ${p} #> /dev/null 2>&1
+        pkg-config --print-errors --exist ${p} && pkg-config --print-errors ${pc[$p]} ${p}
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${p}.pc file (typically included in a -devel package) not found?"
+            echo "- ${p} -devel package not found/doesn't meet version requirement (${pc[$p]}) ?"
             checkPrereqs=1
         else
             echo "- found ${p}.pc file"
