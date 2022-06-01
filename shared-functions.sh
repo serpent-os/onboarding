@@ -26,7 +26,6 @@ CORE_REPOS=(
     moss-fetcher
     moss-format
     moss-vendor
-    onboarding
 )
 
 function failMsg()
@@ -168,7 +167,7 @@ function gitClone()
         git -C "${1}" remote -v
         echo ""
     else
-        echo -e "\n- failed to clone ${1}, not attempting to set push URI.\n"
+        echo -e "\n- failed to git clone ${1}, not attempting to set push URI.\n"
         GIT_CLONE_FAIL+=("${1}")
     fi
 }
@@ -193,40 +192,13 @@ function checkAndCloneFresh ()
     echo ""
 }
 
-# Takes a single argument, which is the name of an existing known dir
-# with a .git/ dir
-function pullExistingSerpentRepo()
-{
-    isGitRepo "$1" || \
-    failMsg "pullExistingSerpentRepo requires a valid git repo as its argument. Aborting."
-
-    pushd "$1"
-    checkGitStatusClean
-
-    git pull --rebase --recurse-submodules
-    if [[ $? -gt 0 ]]; then
-        # We're deliberately dropping the user into the offending git repo
-        failMsg "Failed to run git pull --rebase --recurse-submodules $1. Aborting."
-    fi
-    popd
-}
-
-function pullAllSerpentRepos ()
-{
-    echo -e "\nUpdating all serpent tooling repos to newest upstream version..."
-    for repo in ${CORE_REPOS[@]}; do
-        pullExistingSerpentRepo "$repo"
-    done
-    echo -e "\nAll serpent tooling repos successfully updated to newest upstream version."
-}
-
 # build tool (= dir under git control) specified in $1
 # this function is assumed to be run from the directory
 # below the individual clones (clone root)
 function buildSerpentTool ()
 {
     isGitRepo "$1" || \
-    failMsg "$1 does not appear to be a serpent tool repo?"
+    failMsg "$1 does not appear to be a serpent tooling repo?"
 
     pushd "$1"
     # Make the user deal with unclean git repos
@@ -240,9 +212,61 @@ function buildSerpentTool ()
 
 function buildAllSerpentTools ()
 {
-    echo -e "\nBuilding moss, moss-container and boulder..."
+    echo -e "\nBuilding moss, moss-container and boulder...\n"
     for repo in moss moss-container boulder; do
         buildSerpentTool "$repo"
     done
-    echo -e "\nSuccessfully built moss, moss-container and boulder."
+    echo -e "\nSuccessfully built moss, moss-container and boulder.\n"
+}
+
+# Takes a single argument, which is the name of an existing known dir
+# with a .git/ dir
+function pullExistingSerpentRepo()
+{
+    isGitRepo "$1" || \
+    failMsg "$1 does not appear to be a valid repo for git pull? Aborting."
+
+    pushd "$1"
+    checkGitStatusClean
+
+    git pull --rebase --recurse-submodules
+    if [[ $? -gt 0 ]]; then
+        # We deliberately drop into the offending git repo
+        failMsg "Failed to run git pull --rebase --recurse-submodules for $1. Aborting."
+    fi
+    popd
+}
+
+function pullAllSerpentRepos ()
+{
+    echo -e "\nUpdating all serpent tooling repos to newest upstream version...\n"
+    for repo in ${CORE_REPOS[@]}; do
+        pullExistingSerpentRepo "$repo"
+    done
+    echo -e "\nAll serpent tooling repos successfully updated to newest upstream version.\n"
+}
+
+function pushExistingSerpentRepo()
+{
+    isGitRepo "$1" || \
+    failMsg "$1 does not appear to be a valid repo for git push? Aborting."
+
+    pushd "$1"
+    checkGitStatusClean
+
+    git push
+    if [[ $? -gt 0 ]]; then
+        # We deliberately drop into the offending git repo
+        failMsg "Failed to run git push for $1. Aborting."
+    fi
+    popd
+}
+
+function pushAllSerpentRepos ()
+{
+    echo -e "\nPushing all local commits to upstream repos...\n"
+    for repo in ${CORE_REPOS[@]}; do
+        pushExistingSerpentRepo "$repo"
+    done
+    echo -e "\nAll serpent tooling repos successfully updated to newest upstream version.\n"
 }
