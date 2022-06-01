@@ -38,7 +38,7 @@ This also implies that all subprojects will need to be kept in sync with the fea
 
 The only place we use "full" git submodules is in `moss-vendor`.
 
-### Example
+#### Getting and building the tools
 
 Here, all relevant Serpent OS subprojects will be checked out under `~/repos/serpent-os/`
 
