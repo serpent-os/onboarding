@@ -1,6 +1,6 @@
 ## Description
 
-Onboarding documentation and initial clone script for the Serpent OS tooling.
+Onboarding documentation and convenience scripts for cloning/building/pulling/pushing the Serpent OS tooling.
 
 For a general overview of the goals of Serpent OS and how to get in touch, see our [website](https://serpentos.com).
 
@@ -47,7 +47,9 @@ Here, all relevant Serpent OS subprojects will be checked out under `~/repos/ser
 mkdir ~/repos/serpent-os/
 cd ~/repos/serpent-os/
 
-curl https://gitlab.com/serpent-os/core/onboarding/-/raw/main/git-clone.sh |bash
+git clone https://gitlab.com/serpent-os/core/onboarding/
+onboarding/clone-all.sh
+onboarding/build-all.sh
 ```
 
 ### Serpent tooling build order
@@ -58,7 +60,7 @@ To get started packaging with the current pre-alpha quality serpent tooling, the
 - [`moss-container`](https://gitlab.com/serpent-os/core/moss-container) (our lightweight container tool)
 - [`boulder`](https://gitlab.com/serpent-os/core/boulder) (our system software build tool)
 
-See their respective READMEs for build instructions and prerequisites.
+The `build-all.sh` script builds the tools in the order listed above.
 
 ## Support
 
