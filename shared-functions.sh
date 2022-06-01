@@ -61,10 +61,6 @@ function checkGitStatusClean ()
 PREREQ_NOT_FOUND=0
 function checkPrereqs()
 {
-    # We want to run this from a clean clone root dir that isn't a git repo
-    isGitRepo . && \
-    failMsg "Found a .git/ dir -- please run ${0} from the (unversioned) base serpent-os/ dir."
-
     # Bash associative arrays are well suited for this kind of thing
     declare -A bin
     bin['pkg-config tool']=pkg-config
@@ -157,6 +153,10 @@ GIT_CLONE_FAIL=()
 # Will likely fail if the repo path exists locally, so this may not be a good solution
 function gitClone()
 {
+    # We want to run this from a clean clone root dir that isn't a git repo
+    isGitRepo . && \
+    failMsg "Found a .git/ dir -- please run ${0} from the (unversioned) base serpent-os/ dir."
+
     echo -e "Cloning ${HTTPS_PREFIX}/${1}.git..."
     git clone --recurse-submodules "${HTTPS_PREFIX}/${1}.git"
 
@@ -174,9 +174,6 @@ function gitClone()
 
 function checkAndCloneFresh ()
 {
-    # Run checks
-    checkPrereqs
-
     echo -e "Base pull URI: ${HTTPS_PREFIX}"
     echo -e "Base push URI: ${SSH_PREFIX}\n"
 

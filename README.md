@@ -48,6 +48,10 @@ mkdir ~/repos/serpent-os/
 cd ~/repos/serpent-os/
 
 git clone https://gitlab.com/serpent-os/core/onboarding/
+
+onboarding/check-prereqs.sh
+# only move on to cloning and building once check-prereqs.sh is successful
+
 onboarding/clone-all.sh
 onboarding/build-all.sh
 ```
