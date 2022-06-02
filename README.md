@@ -10,13 +10,14 @@ Serpent OS tooling is written primarily in [Dlang](https://dlang.org/).
 
 ### Prerequisites
 
-We use [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our binaries. 
+We use:
 
-We use [`git`](https://git-scm.com/) to manage development.
+- [`git`](https://git-scm.com/) to manage development.
+- [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our binaries. 
+- [`dfmt`](https://github.com/dlang-community/dfmt) to format our code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with LDC. Our scripts assume that `dfmt` is available in `$PATH`.
+- the python module `codespell` for spell checking. Install it from your distribution's package manager.
 
-We use [`dfmt`](https://github.com/dlang-community/dfmt) to format our code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with ldc. Our scripts assume that `dfmt` is available somewhere in `$PATH`.
-
-We use the python module `codespell` for spell checking. Install it from your distribution's package manager.
+For convenience, we maintain a `check-prereqs.sh` script, which will check for all necessary binaries, runtime libraries and development headers and report missing prerequisites.
 
 #### Dlang Toolchain installation
 
@@ -26,7 +27,7 @@ The currently recommended way to install the Dlang toolchain is to use the offic
 
 Remember to source the appropriate environment initialisation script from your preferred shell's user config file.
 
-We tend to follow the newest upstream version of ldc quite closely.
+We tend to follow the newest upstream version of LDC quite closely.
 
 ### Repo structure
 
@@ -34,17 +35,17 @@ We use a flat repository structure where all Dlang `meson`-controlled subproject
 
 This forces a "lockstep" development methodology, which means that whatever is currently checked out in each subproject is what any given binary will be built against.
 
-This also implies that all subprojects will need to be kept in sync with the features that are being worked on (preferrably using identical topic branch names).
+This also implies that all subprojects will need to be kept in sync with the features that are being worked on (preferably using identical topic branch names).
 
 The only place we use "full" git submodules is in `moss-vendor`.
 
-#### Getting and building the tools
+#### Getting and building the serpent tooling
 
 Here, all relevant Serpent OS subprojects will be checked out under `~/repos/serpent-os/`
 
 ```
 # Initial setup
-mkdir ~/repos/serpent-os/
+mkdir -pv ~/repos/serpent-os/
 cd ~/repos/serpent-os/
 
 git clone https://gitlab.com/serpent-os/core/onboarding/
@@ -58,17 +59,17 @@ onboarding/build-all.sh
 
 ### Serpent tooling build order
 
-To get started packaging with the current pre-alpha quality serpent tooling, the following serpent tools need to be built in the order listed below:
+To get started packaging with the current pre-alpha quality serpent tooling, the following binaries need to be built in the order listed below:
 
 - [`moss`](https://gitlab.com/serpent-os/core/moss) (our system software management tool)
 - [`moss-container`](https://gitlab.com/serpent-os/core/moss-container) (our lightweight container tool)
 - [`boulder`](https://gitlab.com/serpent-os/core/boulder) (our system software build tool)
 
-The `build-all.sh` script builds the tools in the order listed above.
+The `build-all.sh` script builds the serpent tooling in the order listed above.
 
 ## Support
 
-Please reference the website for instructions on how to get in touch with the Serpent OS developers.
+Please refer to the website for instructions on how to get in touch with the Serpent OS developers.
 
 ## Contributing
 

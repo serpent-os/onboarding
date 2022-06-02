@@ -81,7 +81,7 @@ function checkPrereqs()
     for b in "${!bin[@]}" ; do
         command -v "${bin[$b]}" > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${b} (${bin[$b]}) not found in PATH?"
+            echo "- ${b} (${bin[$b]}) not found in \$PATH."
             PREREQ_NOT_FOUND=1
         else
             echo "- found ${b} (${bin[$b]})"
@@ -99,9 +99,9 @@ function checkPrereqs()
     pc[rocksdb]='--atleast-version=6.22'
 
     for p in ${!pc[@]}; do
-        pkg-config --print-errors --exist ${p} && pkg-config --print-errors ${pc[$p]} ${p}
+        pkg-config --print-errors --exists ${p} && pkg-config --print-errors ${pc[$p]} ${p}
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${p} -devel package not found/doesn't meet version requirement (${pc[$p]}) ?"
+            echo "- ${p} -devel package not found/doesn't meet version requirement (${pc[$p]})."
             PREREQ_NOT_FOUND=1
         else
             echo "- found ${p}.pc file"
@@ -116,7 +116,7 @@ function checkPrereqs()
     for h in ${!header[@]}; do
         find /usr/include -name ${header[$h]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${h} headers (${header[$h]}) not found?"
+            echo "- ${h} headers (${header[$h]}) not found."
             PREREQ_NOT_FOUND=1
         else
             echo "- found ${h} headers (/usr/include/${header[$h]})"
@@ -134,7 +134,7 @@ function checkPrereqs()
     for l in ${!lib[@]}; do
         find /usr/lib{,64} -name ${lib[$l]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${l} library (${lib[$l]}) not found?"
+            echo "- ${l} library (${lib[$l]}) not found."
             PREREQ_NOT_FOUND=1
         else
             echo "- found ${l} library (${lib[$l]})"
