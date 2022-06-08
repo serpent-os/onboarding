@@ -48,13 +48,7 @@ Here, all relevant Serpent OS subprojects will be checked out under `~/repos/ser
 mkdir -pv ~/repos/serpent-os/
 cd ~/repos/serpent-os/
 
-git clone https://gitlab.com/serpent-os/core/onboarding/
-
-onboarding/check-prereqs.sh
-# only move on to cloning and building once check-prereqs.sh is successful
-
-onboarding/clone-all.sh
-onboarding/build-all.sh
+curl https://gitlab.com/serpent-os/core/onboarding/-/raw/refactor/init.sh |bash
 ```
 
 ### Serpent tooling build order
