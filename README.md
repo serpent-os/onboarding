@@ -48,7 +48,7 @@ Here, all relevant Serpent OS subprojects will be checked out under `~/repos/ser
 mkdir -pv ~/repos/serpent-os/
 cd ~/repos/serpent-os/
 
-curl https://gitlab.com/serpent-os/core/onboarding/-/raw/refactor/init.sh |bash
+curl https://gitlab.com/serpent-os/core/onboarding/-/raw/main/init.sh |bash
 ```
 
 ### Serpent tooling build order
