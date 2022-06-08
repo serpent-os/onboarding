@@ -148,51 +148,18 @@ function checkPrereqs()
     fi
 }
 
-
-GIT_CLONE_FAIL=()
-# Will likely fail if the repo path exists locally, so this may not be a good solution
-function gitClone()
+# Emit message if ${HOME}/bin is not in $PATH
+function checkPath ()
 {
-    # We want to run this from a clean clone root dir that isn't a git repo
-    isGitRepo . && \
-    failMsg "Found a .git/ dir -- please run ${0} from the (unversioned) base serpent-os/ dir."
-
-    echo -e "Cloning ${HTTPS_PREFIX}/${1}.git..."
-    git clone --recurse-submodules "${HTTPS_PREFIX}/${1}.git"
-
-    # Only set up push URI on successful clone
-    if [[ $? -eq 0 ]]; then
-        echo -e "\nSetting up ${1} SSH push URI...\n"
-        git -C "${1}" remote set-url --push origin "${SSH_PREFIX}/${1}.git"
-        git -C "${1}" remote -v
-        echo ""
-    else
-        echo -e "\n- failed to git clone ${1}, not attempting to set push URI.\n"
-        GIT_CLONE_FAIL+=("${1}")
+    if [[ ! "${PATH}" =~ "${HOME}/bin" ]]; then
+        echo -e "\nRemember to add \${HOME}/bin to \$PATH \!\n"
     fi
-}
-
-function checkAndCloneFresh ()
-{
-    echo -e "Base pull URI: ${HTTPS_PREFIX}"
-    echo -e "Base push URI: ${SSH_PREFIX}\n"
-
-    for repo in ${CORE_REPOS[@]}; do
-        gitClone "${repo}"
-    done
-
-    # If we have a non-empty GIT_CLONE_FAIL array, we're in trouble
-    [[ ${#GIT_CLONE_FAIL[@]} -gt 0 ]] && failMsg "ERROR:\n\nFailed to clone:\n\n${failClone[@]} !"
-
-    echo -e "List of directories in ${RUN_DIR}:\n"
-    ls -1F --group-directories-first ${RUN_DIR}
-    echo ""
 }
 
 # build tool (= dir under git control) specified in $1
 # this function is assumed to be run from the directory
 # below the individual clones (clone root)
-function buildSerpentTool ()
+function buildTool ()
 {
     isGitRepo "$1" || \
     failMsg "$1 does not appear to be a serpent tooling repo?"
@@ -207,18 +174,47 @@ function buildSerpentTool ()
     popd
 }
 
-function buildAllSerpentTools ()
+function buildAllTools ()
 {
+    # We can do this because this invocation doesn't touch existing bin dir/symlink
+    mkdir -pv ${HOME}/bin
     echo -e "\nBuilding moss, moss-container and boulder...\n"
     for repo in moss moss-container boulder; do
-        buildSerpentTool "$repo"
+        buildTool "$repo"
     done
     echo -e "\nSuccessfully built moss, moss-container and boulder.\n"
+    echo -e "Created the following symlinks:\n"
+    ls -l ${HOME}/bin/{moss,moss-container,boulder}
+    checkPath
+}
+
+
+REPO_FAIL=()
+# Will likely fail if the repo path exists locally, so this may not be a good solution
+function cloneRepo()
+{
+    # We want to run this from a clean clone root dir that isn't a git repo
+    isGitRepo . && \
+    failMsg "Found a .git/ dir -- please run ${0} from the (unversioned) base serpent-os/ dir."
+
+    echo -e "Cloning ${HTTPS_PREFIX}/${1}.git..."
+    git clone --recurse-submodules "${HTTPS_PREFIX}/${1}.git"
+
+    # Only set up push URI on successful clone
+    if [[ $? -eq 0 ]]; then
+        echo -e "\nSetting up ${1} SSH push URI...\n"
+        git remote set-url --push origin "${SSH_PREFIX}/${1}.git"
+        git remote -v
+        echo ""
+    else
+        echo -e "\n- failed to git clone ${1}, not attempting to set push URI.\n"
+        REPO_FAIL+=("${1}")
+    fi
 }
 
 # Takes a single argument, which is the name of an existing known dir
 # with a .git/ dir
-function pullExistingSerpentRepo()
+function pullRepo()
 {
     isGitRepo "$1" || \
     failMsg "$1 does not appear to be a valid repo for git pull? Aborting."
@@ -227,23 +223,40 @@ function pullExistingSerpentRepo()
     checkGitStatusClean
 
     git pull --rebase --recurse-submodules
-    if [[ $? -gt 0 ]]; then
+    if [[ $? -eq 0 ]]; then
+        echo -e "\nSetting up ${1} SSH push URI...\n"
+        git remote set-url --push origin "${SSH_PREFIX}/${1}.git"
+        git remote -v
+        echo ""
+    else
         # We deliberately drop into the offending git repo
-        failMsg "Failed to run git pull --rebase --recurse-submodules for $1. Aborting."
+        echo -e"\n - failed to git pull --rebase --recurse-submodules ${1}, not attempting to set push URI.\n"
+        REPO_FAIL+=("${1}")
     fi
     popd
 }
 
-function pullAllSerpentRepos ()
+function updateRepo ()
+{
+    isGitRepo "$1" && pullRepo "$1" || cloneRepo "$1"
+}
+
+function updateAllRepos ()
 {
     echo -e "\nUpdating all serpent tooling repos to newest upstream version...\n"
     for repo in ${CORE_REPOS[@]}; do
-        pullExistingSerpentRepo "$repo"
+        updateRepo "$repo"
     done
+    # If we have a non-empty REPO_FAIL array, we're in trouble
+    [[ ${#REPO_FAIL[@]} -gt 0 ]] && failMsg "ERROR:\n\nFailed to update repos:\n\n${failClone[@]} !"
+
+    echo -e "List of directories in ${RUN_DIR}:\n"
+    ls -1F --group-directories-first ${RUN_DIR}
+
     echo -e "\nAll serpent tooling repos successfully updated to newest upstream version.\n"
 }
 
-function pushExistingSerpentRepo()
+function pushRepo()
 {
     isGitRepo "$1" || \
     failMsg "$1 does not appear to be a valid repo for git push? Aborting."
@@ -259,11 +272,11 @@ function pushExistingSerpentRepo()
     popd
 }
 
-function pushAllSerpentRepos ()
+function pushAllRepos ()
 {
     echo -e "\nPushing all local commits to upstream repos...\n"
     for repo in ${CORE_REPOS[@]}; do
-        pushExistingSerpentRepo "$repo"
+        pushRepo "$repo"
     done
     echo -e "\nAll serpent tooling repos successfully updated to newest upstream version.\n"
 }

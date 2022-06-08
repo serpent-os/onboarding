@@ -5,8 +5,6 @@
 # Copyright: © 2022 Serpent OS Developers
 #
 
-# Build moss, moss-container and boulder
-
 # Be helpful if the user supplies an argument
 if [[ -n "$1" ]]; then
     cat << EOF
@@ -27,4 +25,4 @@ ONBOARDING_DIR=$(dirname "$0")
 
 source "${ONBOARDING_DIR}/shared-functions.sh"
 
-buildAllSerpentTools
+buildAllTools

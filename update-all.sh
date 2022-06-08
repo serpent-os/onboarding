@@ -5,15 +5,16 @@
 # Copyright: © 2022 Serpent OS Developers
 #
 
-# Pull all Serpent OS Dlang repos checked out by clone-all.sh
-
 # Be helpful if the user supplies an argument
 if [[ -n "$1" ]]; then
     cat << EOF
 
-Usage: pull-all.sh
+Usage: update-all.sh
 
-Pull and rebase all existing clones of the Serpent OS tool repositories.
+Clone or pull+rebase all the Serpent OS tool repositories.
+
+Upon successful clone/pull operations, check prerequisites
+and (re)build the serpent tooling if the check passes.
 
 NB: Please run the script from the serpent-os/ git clone root.
 
@@ -26,4 +27,4 @@ ONBOARDING_DIR=$(dirname "$0")
 
 source "${ONBOARDING_DIR}/shared-functions.sh"
 
-pullAllSerpentRepos
+updateAllRepos && checkPrereqs && buildAllTools
