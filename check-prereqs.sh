@@ -9,7 +9,7 @@
 # Serpent OS Dlang tooling
 
 # Be helpful if the user supplies an argument
-if [[ -n "$1" ]]; then
+if [[ -n "${1}" ]]; then
     cat << EOF
 
 Usage: check-prerequisites.sh
@@ -21,7 +21,7 @@ EOF
 fi
 
 # ensure we get can source the shared functions properly
-ONBOARDING_DIR=$(dirname "$0")
+ONBOARDING_DIR=$(dirname "${0}")
 
 source "${ONBOARDING_DIR}/shared-functions.sh"
 

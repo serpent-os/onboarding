@@ -34,10 +34,10 @@ function failMsg()
     exit 1
 }
 
-# check that the directory given in $1 exists and is a git repo
+# check that the directory given in ${1} exists and is a git repo
 function isGitRepo ()
 {
-    if [[ -d "$1"/.git/ ]]; then
+    if [[ -d "${1}"/.git/ ]]; then
         return 0 # "succes"
     else
         return 1 # ! "succes"
@@ -156,21 +156,21 @@ function checkPath ()
     fi
 }
 
-# build tool (= dir under git control) specified in $1
+# build tool (= dir under git control) specified in ${1}
 # this function is assumed to be run from the directory
 # below the individual clones (clone root)
 function buildTool ()
 {
-    isGitRepo "$1" || \
-    failMsg "$1 does not appear to be a serpent tooling repo?"
+    isGitRepo "${1}" || \
+    failMsg "${1} does not appear to be a serpent tooling repo?"
 
-    pushd "$1"
+    pushd "${1}"
     # Make the user deal with unclean git repos
     checkGitStatusClean
     # We want to unconditionally (re)configure the build
     meson setup build/ && meson configure build/ && \
     meson compile -C build/ && \
-    ln -svf "${PWD}/build/$1" "${HOME}/bin/"
+    ln -svf "${PWD}/build/${1}" "${HOME}/bin/"
     popd
 }
 
@@ -203,8 +203,8 @@ function cloneRepo()
     # Only set up push URI on successful clone
     if [[ $? -eq 0 ]]; then
         echo -e "\nSetting up ${1} SSH push URI...\n"
-        git remote set-url --push origin "${SSH_PREFIX}/${1}.git"
-        git remote -v
+        git -C "${1}" remote set-url --push origin "${SSH_PREFIX}/${1}.git"
+        git -C "${1}" remote -v
         echo ""
     else
         echo -e "\n- failed to git clone ${1}, not attempting to set push URI.\n"
@@ -216,10 +216,10 @@ function cloneRepo()
 # with a .git/ dir
 function pullRepo()
 {
-    isGitRepo "$1" || \
-    failMsg "$1 does not appear to be a valid repo for git pull? Aborting."
+    isGitRepo "${1}" || \
+    failMsg "${1} does not appear to be a valid repo for git pull? Aborting."
 
-    pushd "$1"
+    pushd "${1}"
     checkGitStatusClean
 
     git pull --rebase --recurse-submodules
@@ -238,7 +238,7 @@ function pullRepo()
 
 function updateRepo ()
 {
-    isGitRepo "$1" && pullRepo "$1" || cloneRepo "$1"
+    isGitRepo "${1}" && pullRepo "${1}" || cloneRepo "${1}"
 }
 
 function updateAllRepos ()
@@ -258,16 +258,16 @@ function updateAllRepos ()
 
 function pushRepo()
 {
-    isGitRepo "$1" || \
-    failMsg "$1 does not appear to be a valid repo for git push? Aborting."
+    isGitRepo "${1}" || \
+    failMsg "${1} does not appear to be a valid repo for git push? Aborting."
 
-    pushd "$1"
+    pushd "${1}"
     checkGitStatusClean
 
     git push
     if [[ $? -gt 0 ]]; then
         # We deliberately drop into the offending git repo
-        failMsg "Failed to run git push for $1. Aborting."
+        failMsg "Failed to run git push for ${1}. Aborting."
     fi
     popd
 }

@@ -14,9 +14,7 @@ cat << EOF > ./update.sh
 #
 
 if [[ -d onboarding/.git/ ]]; then
-    pushd onboarding
-    git pull --rebase
-    popd
+    git -C onboarding/ pull --rebase
 else
     git clone https://gitlab.com/serpent-os/core/onboarding
 fi
