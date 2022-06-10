@@ -27,4 +27,5 @@ ONBOARDING_DIR=$(dirname "${0}")
 
 source "${ONBOARDING_DIR}/shared-functions.sh"
 
-updateAllRepos && checkPrereqs && buildAllTools
+# fail up-front according to the principle of least astonishment
+checkPrereqs && updateAllRepos && buildAllTools
