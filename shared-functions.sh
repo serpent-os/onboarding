@@ -280,3 +280,23 @@ function pushAllRepos ()
     done
     echo -e "\nAll serpent tooling repos successfully updated to newest upstream version.\n"
 }
+
+function updateUsage ()
+{
+    MSG="
+    To check if all prerequisites are available on the local system,
+    run 'onboarding/check-prereqs.sh'.
+
+    To build the currently checked out versions of the Serpent OS tooling,
+    run 'onboarding/build-all.sh'.
+
+    Developers with commit access can use 'onboarding/push-all.sh' to commit all
+    local changes in sequence when working on feature/topic branches.
+
+    To update all repos and build the newest version of the Serpent OS tooling,
+    simply run './update.sh' from the serpent-os/ clone root.
+
+    Most people should only need to use './update.sh'.
+    "
+    echo -e "${MSG}"
+}
