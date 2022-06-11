@@ -13,8 +13,15 @@ cat << EOF > ./update.sh
 # Copyright: © 2022 Serpent OS Developers
 #
 
+function failMsg ()
+{
+    echo -e "|\n'- \${1}\\n"
+    exit 1
+}
+
 if [[ -d onboarding/.git/ ]]; then
-    git -C onboarding/ pull --rebase
+    git -C onboarding/ pull --rebase || \
+        failMsg 'onboarding/ repo not clean. Cannot update it. Aborting.'
 else
     git clone https://gitlab.com/serpent-os/core/onboarding
 fi
