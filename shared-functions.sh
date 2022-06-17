@@ -171,6 +171,10 @@ function buildTool ()
     meson setup build/ && meson configure build/ && \
     meson compile -C build/ && \
     ln -svf "${PWD}/build/${1}" "${HOME}/bin/"
+    # boulder is "special" (... *ahem* ...)
+    if [[ "${1}" == "boulder" ]]; then
+        ln -svf "${PWD}/build/source/${1}/${1}" "${HOME}/bin/"
+    fi
     popd
 }
 
