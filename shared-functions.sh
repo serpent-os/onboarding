@@ -242,7 +242,7 @@ function pullRepo()
         echo ""
     else
         # We deliberately drop into the offending git repo
-        echo -e"\n - failed to git pull --rebase --recurse-submodules ${1}, not attempting to set push URI.\n"
+        echo -e "\n - failed to git pull --rebase --recurse-submodules ${1}, not attempting to set push URI.\n"
         REPO_FAIL+=("${1}")
     fi
     popd
