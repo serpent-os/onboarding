@@ -196,6 +196,30 @@ function buildAllTools ()
     checkPath
 }
 
+function cleanTool ()
+{
+    isGitRepo "${1}" || \
+    failMsg "${1} does not appear to be a serpent tooling repo?"
+
+    pushd "${1}"
+    if [[ -d build/ ]]; then
+        echo -e "\nCleaning ${1}/build/ ...\n"
+        meson compile --clean -C build/
+        echo -e "\nDone.\n"
+    else
+        echo -e "\nCan't clean non-existing ${1}/build/ directory.\n"
+    fi
+    popd
+}
+
+function cleanAllTools ()
+{
+    echo -e "\nRunning 'meson compile --clean' for all serpent repos...\n"
+    for repo in ${CORE_REPOS[@]}; do
+        cleanTool "$repo"
+    done
+
+}
 
 REPO_FAIL=()
 # Will likely fail if the repo path exists locally, so this may not be a good solution
