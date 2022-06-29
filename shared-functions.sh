@@ -306,7 +306,7 @@ function updateUsage ()
     To build the currently checked out versions of the Serpent OS tooling,
     run 'onboarding/build-all.sh'.
 
-    Developers with commit access can use 'onboarding/push-all.sh' to commit all
+    Developers with commit access can use 'onboarding/push-all.sh' to push all
     local changes in sequence when working on feature/topic branches.
 
     To update all repos and build the newest version of the Serpent OS tooling,
