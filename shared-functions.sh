@@ -167,7 +167,6 @@ function buildTool ()
     #
     # The default is the number of CPUs in the system
     # (managed by meson/ninja)
-    local JOBS
     if [[ "${1}" == "boulder" ]]; then
         local JOBS="-j4"
     fi
