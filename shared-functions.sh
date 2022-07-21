@@ -161,14 +161,11 @@ function checkPath ()
 # below the individual clones (clone root)
 function buildTool ()
 {
-    # Limits memory consumption to <8GiB worst case when
-    # compiling the licence stuff in drafter in boulder
-    # due to mad CTFE template instantiation memory usage.
-    #
-    # The default is the number of CPUs in the system
-    # (managed by meson/ninja)
+    # Limit memory consumption to <10GiB worst case when compiling the
+    # drafter/ licence stuff in boulder, due to each active ldc2
+    # instance using up to 1.6GiB resident memory.
     if [[ "${1}" == "boulder" ]]; then
-        local JOBS="-j4"
+        local JOBS="-j6"
     fi
 
     isGitRepo "${1}" || \
@@ -177,7 +174,10 @@ function buildTool ()
     pushd "${1}"
     # Make the user deal with unclean git repos
     checkGitStatusClean
-    # We want to unconditionally (re)configure the build
+    # We want to unconditionally (re)configure the build.
+    #
+    # ${JOBS:-} is expanded to nothing if JOBS isn't set above
+    # which implies using the number of available hardware threads
     meson setup --wipe build/ && \
     meson compile -C build/ ${JOBS:-} && \
     ln -svf "${PWD}/build/${1}" "${HOME}/bin/"
