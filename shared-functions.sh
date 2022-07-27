@@ -257,9 +257,10 @@ function cloneRepo()
 
     # TODO: Switch back to the main branch of moss-db, once the LMDB
     #       port is ready. Use the 'legacy-moss-branch' for now.
-    if [[ "${1}" == "moss-db" ]]; then
-        git checkout moss-legacy-branch || \
-            failMsg "- failed to check out the 'moss-legacy-branch' for ${1}\!"
+    if [[ "${1}" == "moss-db" && -d "${1}" ]]; then
+        echo -e "\nChecking out the moss-db 'legacy-moss-branch'"
+        git -C "${1}" checkout legacy-moss-branch || \
+            failMsg "- failed to git checkout the 'legacy-moss-branch' for ${1}!"
     fi
 }
 
@@ -293,6 +294,14 @@ function pullRepo()
         REPO_FAIL+=("${1}")
     fi
     popd
+
+    # TODO: Switch back to the main branch of moss-db, once the LMDB
+    #       port is ready. Use the 'legacy-moss-branch' for now.
+    if [[ "${1}" == "moss-db" && -d "${1}" ]]; then
+        echo -e "\nChecking out the moss-db 'legacy-moss-branch'"
+        git -C "${1}" checkout legacy-moss-branch || \
+            failMsg "- failed to git checkout the 'legacy-moss-branch' for ${1}!"
+    fi
 }
 
 function updateRepo ()
