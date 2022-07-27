@@ -174,11 +174,12 @@ function buildTool ()
     pushd "${1}"
     # Make the user deal with unclean git repos
     checkGitStatusClean
-    # We want to unconditionally (re)configure the build.
+    # We want to unconditionally (re)configure the build, if a previous
+    # build/ dir exists.
     #
     # ${JOBS:-} is expanded to nothing if JOBS isn't set above
     # which implies using the number of available hardware threads
-    meson setup --wipe build/ && \
+    ( meson setup --wipe build/ || meson setup build/ ) && \
     meson compile -C build/ ${JOBS:-} && \
     ln -svf "${PWD}/build/${1}" "${HOME}/bin/"
     # error out noisily if any of the build steps fail
