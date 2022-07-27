@@ -174,6 +174,7 @@ function buildTool ()
     pushd "${1}"
     # Make the user deal with unclean git repos
     checkGitStatusClean
+
     # We want to unconditionally (re)configure the build, if a previous
     # build/ dir exists.
     #
@@ -252,6 +253,14 @@ function cloneRepo()
     else
         echo -e "\n- failed to git clone ${1}, not attempting to set push URI.\n"
         REPO_FAIL+=("${1}")
+    fi
+
+    # TODO: Switch back to the main branch of moss-db, once the LMDB
+    #       port is ready. Use the 'legacy-moss-branch' for now.
+    if [[ "${1}" == "moss-db" ]]; then
+        git checkout moss-legacy-branch
+    else
+        failMsg "- failed to check out the 'moss-legacy-branch' for ${1}\!"
     fi
 }
 
