@@ -99,7 +99,7 @@ function checkPrereqs()
     pc[rocksdb]='--atleast-version=6.22'
 
     for p in ${!pc[@]}; do
-        echo "- ${p} --devel package:"
+        echo "- ${p} -devel package:"
         pkg-config --exists ${p}
         if [[ ! $? -eq 0 ]]; then
             echo " - ${p} -devel package not found."
@@ -143,10 +143,10 @@ function checkPrereqs()
     for l in ${!lib[@]}; do
         find /usr/lib{,64} -name ${lib[$l]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${l} library (${lib[$l]}) not found."
+            echo "- ${l} runtime library (${lib[$l]}) not found."
             PREREQ_NOT_FOUND=1
         else
-            echo "- found ${l} library (${lib[$l]})"
+            echo "- found ${l} runtime library (${lib[$l]})"
         fi
     done
 
