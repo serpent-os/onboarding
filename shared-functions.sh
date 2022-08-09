@@ -76,7 +76,7 @@ function checkPrereqs()
     bin['Meson build tool']=meson
     bin['Ninja build tool']=ninja
 
-    echo -e "\nChecking for necessary tools..."
+    echo -e "\nChecking for necessary tools/binaries"
     #'all keys in the bin associative array'
     for b in "${!bin[@]}" ; do
         command -v "${bin[$b]}" > /dev/null 2>&1
@@ -88,7 +88,7 @@ function checkPrereqs()
         fi
     done
 
-    echo "Checking for necessary libraries and development headers..."
+    echo -e "\nChecking for necessary development libraries and headers (-devel packages):"
     # Key is the .pc name (without extension) -- e.g. libcurl.pc -> libcurl
     # Value is the invocation parameters for a successful pkg-config match
     # FIXME: Determine and set correct minimum versions
@@ -99,12 +99,20 @@ function checkPrereqs()
     pc[rocksdb]='--atleast-version=6.22'
 
     for p in ${!pc[@]}; do
-        pkg-config --print-errors --exists ${p} && pkg-config --print-errors ${pc[$p]} ${p}
+        echo "- ${p} --devel package:"
+        pkg-config --exists ${p}
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${p} -devel package not found/doesn't meet version requirement (${pc[$p]})."
+            echo " - ${p} -devel package not found."
             PREREQ_NOT_FOUND=1
         else
-            echo "- found ${p}.pc file"
+            echo " - checking version requirement (${pc[$p]}):"
+            pkg-config --print-errors ${pc[$p]} ${p}
+            if [[ ! $? -eq 0 ]]; then
+                echo "  - ${p} -devel package installed, but does not meet version requirement."
+                PREREQ_NOT_FOUND=1
+            else
+                echo "  - found ${p}.pc file which meets version requirement."
+            fi
         fi
     done
 
@@ -116,10 +124,10 @@ function checkPrereqs()
     for h in ${!header[@]}; do
         find /usr/include -name ${header[$h]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
-            echo "- ${h} headers (${header[$h]}) not found."
+            echo "- ${h} -devel headers (${header[$h]}) not found."
             PREREQ_NOT_FOUND=1
         else
-            echo "- found ${h} headers (/usr/include/${header[$h]})"
+            echo "- found ${h} -devel headers (/usr/include/${header[$h]})"
         fi
     done
 
@@ -131,6 +139,7 @@ function checkPrereqs()
     lib[xxhash]=libxxhash.so.0
     lib[zstd]=libzstd.so.1
 
+    echo -e "\nChecking for the existence of non-development (runtime) libraries"
     for l in ${!lib[@]}; do
         find /usr/lib{,64} -name ${lib[$l]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
