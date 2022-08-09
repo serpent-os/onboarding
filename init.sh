@@ -22,7 +22,7 @@ function failMsg ()
 if [[ -d onboarding/.git/ ]]; then
     git -C onboarding/ pull --rebase || failMsg 'onboarding/ repo not clean. Cannot update it. Aborting.'
 else
-    git clone https://gitlab.com/serpent-os/core/onboarding
+    git clone https://github.com/serpent-os/onboarding.git
 fi
 
 exec onboarding/update-all.sh

@@ -12,8 +12,8 @@
 RUN_DIR="${PWD}"
 
 # Download via HTTPS (negotiates faster than SSH), push via SSH
-SSH_PREFIX="git@gitlab.com:serpent-os/core"
-HTTPS_PREFIX="https://gitlab.com/serpent-os/core"
+SSH_PREFIX="git@github.com:serpent-os"
+HTTPS_PREFIX="https://github.com/serpent-os"
 
 CORE_REPOS=(
     boulder

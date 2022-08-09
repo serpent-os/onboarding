@@ -48,26 +48,26 @@ Here, all relevant Serpent OS subprojects will be checked out under `~/repos/ser
 mkdir -pv ~/repos/serpent-os/
 cd ~/repos/serpent-os/
 
-curl https://gitlab.com/serpent-os/core/onboarding/-/raw/main/init.sh |bash
+curl https://raw.githubusercontent.com/serpent-os/onboarding/main/init.sh |bash
 ```
 
 ### Serpent tooling build order
 
 To get started packaging with the current pre-alpha quality serpent tooling, the following binaries need to be built in the order listed below:
 
-- [`moss`](https://gitlab.com/serpent-os/core/moss) (our system software management tool)
-- [`moss-container`](https://gitlab.com/serpent-os/core/moss-container) (our lightweight container tool)
-- [`boulder`](https://gitlab.com/serpent-os/core/boulder) (our system software build tool)
+- [`moss`](https://github.com/serpent-os/moss) (our system software management tool)
+- [`moss-container`](https://github.com/serpent-os/moss-container) (our lightweight container tool)
+- [`boulder`](https://github.com/serpent-os/boulder) (our system software build tool)
 
 The `build-all.sh` script builds the serpent tooling in the order listed above.
 
 ## Support
 
-Please refer to the website for instructions on how to get in touch with the Serpent OS developers.
+Please refer to the [website](https://serpentos.com) for instructions on how to get in touch with the Serpent OS developers.
 
 ## Contributing
 
-Please get in touch with the Serpent OS developers before contributing MRs.
+Please get in touch with the [Serpent OS developers](https://serpentos.com/team) before contributing pull requests.
 
 We're a friendly bunch and will likely welcome your contributions.
 
