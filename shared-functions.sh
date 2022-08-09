@@ -141,7 +141,7 @@ function checkPrereqs()
 
     echo -e "\nChecking for the existence of non-development (runtime) libraries"
     for l in ${!lib[@]}; do
-        find /usr/lib{,64} -name ${lib[$l]} > /dev/null 2>&1
+        find /usr/lib{,64} -name ${lib[$l]} 2>/dev/null |xargs stat &>/dev/null
         if [[ ! $? -eq 0 ]]; then
             echo "- ${l} runtime library (${lib[$l]}) not found."
             PREREQ_NOT_FOUND=1
