@@ -51,6 +51,8 @@ cd ~/repos/serpent-os/
 curl https://raw.githubusercontent.com/serpent-os/onboarding/main/init.sh |bash
 ```
 
+Note that the build process can require up to 12 GiB of Resident memory, so a system with **16 GiB of RAM is recommended** and it may be necessary to turn on zram (or zswap) to make `boulder` compile successfully.
+
 ### Serpent tooling build order
 
 To get started packaging with the current pre-alpha quality serpent tooling, the following binaries need to be built in the order listed below:
