@@ -135,7 +135,7 @@ function checkPrereqs()
     # - it ensures runtime access to C libraries from Dlang C bindings
     declare -A lib
     lib[curl]=libcurl.so.4
-    lib[rocksdb]=librocksdb.so.6
+    lib[rocksdb]=librocksdb.so
     lib[xxhash]=libxxhash.so.0
     lib[zstd]=libzstd.so.1
 
