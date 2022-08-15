@@ -288,7 +288,7 @@ function pullRepo()
         echo -e "\nChecking ${1} SSH push URI...\n"
         local PUSH_URI="$(git remote get-url --push origin)"
         # Don't touch the push URI if the user has manually re-configured it to a different SSH push URI
-        if [[ "${PUSH_URI}" =~ "git@gitlab.com:" && ! "${PUSH_URI}" =~ "${SSH_PREFIX}" ]]; then
+        if [[ "${PUSH_URI}" =~ "git@github.com:" && ! "${PUSH_URI}" =~ "${SSH_PREFIX}" ]]; then
             echo "'- Push URI has been set to a custom SSH URI, not attempting to reset it."
         else
             # Reset push URI on the off chance that the current repo has been recloned manually
