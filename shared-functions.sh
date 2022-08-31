@@ -263,14 +263,7 @@ function cloneRepo()
         echo -e "\n- failed to git clone ${1}, not attempting to set push URI.\n"
         REPO_FAIL+=("${1}")
     fi
-
-    # TODO: Switch back to the main branch of moss-db and moss-deps, once the LMDB
-    #       port is ready. Use the 'legacy-moss-branch' for now.
-    if [[ ( "${1}" == "moss-db" || "${1}" == "moss-deps" ) && -d "${1}" ]]; then
-        echo -e "\nChecking out the ${1} 'legacy-moss-branch'"
-        git -C "${1}" checkout legacy-moss-branch || \
-            failMsg "- failed to git checkout the 'legacy-moss-branch' for ${1}!"
-    fi
+    checkoutLegacyMossBranch "${1}"
 }
 
 # Takes a single argument, which is the name of an existing known dir
@@ -303,10 +296,14 @@ function pullRepo()
         REPO_FAIL+=("${1}")
     fi
     popd
+    checkoutLegacyMossBranch "${1}"
+}
 
-    # TODO: Switch back to the main branch of moss-db, once the LMDB
-    #       port is ready. Use the 'legacy-moss-branch' for now.
-    if [[ ( "${1}" == "moss-db" || "${1}" == "moss-deps" ) && -d "${1}" ]]; then
+# TODO: Switch back to the main branches once the LMDB
+#       port is ready. Use the 'legacy-moss-branch' for now.
+function checkoutLegacyMossBranch ()
+{
+    if [[ ( "${1}" == "moss-core" || "${1}" == "moss-db" || "${1}" == "moss-deps" ) && -d "${1}" ]]; then
         echo -e "\nChecking out the ${1} 'legacy-moss-branch'"
         git -C "${1}" checkout legacy-moss-branch || \
             failMsg "- failed to git checkout the 'legacy-moss-branch' for ${1}!"
