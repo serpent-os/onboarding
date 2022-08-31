@@ -306,8 +306,8 @@ function pullRepo()
 
     # TODO: Switch back to the main branch of moss-db, once the LMDB
     #       port is ready. Use the 'legacy-moss-branch' for now.
-    if [[ "${1}" == "moss-db" && -d "${1}" ]]; then
-        echo -e "\nChecking out the moss-db 'legacy-moss-branch'"
+    if [[ ( "${1}" == "moss-db" || "${1}" == "moss-deps" ) && -d "${1}" ]]; then
+        echo -e "\nChecking out the ${1} 'legacy-moss-branch'"
         git -C "${1}" checkout legacy-moss-branch || \
             failMsg "- failed to git checkout the 'legacy-moss-branch' for ${1}!"
     fi
