@@ -6,8 +6,8 @@
 #
 
 # shared-functions.sh:
-# Base library of functions for git-clone.sh and git-pull.sh scripts
-# used to manage all prerequisite serpent-os tooling repositories
+# Base library of functions for the scripts used to manage all prerequisite
+# serpent-os tooling repositories
 
 RUN_DIR="${PWD}"
 
@@ -38,9 +38,9 @@ function failMsg()
 function isGitRepo ()
 {
     if [[ -d "${1}"/.git/ ]]; then
-        return 0 # "succes"
+        return 0 # "success"
     else
-        return 1 # ! "succes"
+        return 1 # ! "success"
     fi
 }
 
@@ -57,8 +57,8 @@ function checkGitStatusClean ()
 }
 
 
-# Check for all tools, libraries and headers before bailing
 PREREQ_NOT_FOUND=0
+# Check for all tools, libraries and headers before bailing
 function checkPrereqs()
 {
     # Bash associative arrays are well suited for this kind of thing
@@ -77,7 +77,7 @@ function checkPrereqs()
     bin['Ninja build tool']=ninja
 
     echo -e "\nChecking for necessary tools/binaries"
-    #'all keys in the bin associative array'
+    # 'all keys in the bin associative array'
     for b in "${!bin[@]}" ; do
         command -v "${bin[$b]}" > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
@@ -173,12 +173,12 @@ function buildTool ()
     # Limit memory consumption to <10GiB worst case when compiling the
     # drafter/ licence stuff in boulder, due to each active ldc2
     # instance using up to 1.6GiB resident memory.
-    if [[ "${1}" == "boulder" ]]; then
+    if [[ "${1}" == "boulder" && $(nproc) -gt 4 ]]; then
         local JOBS="-j6"
     fi
 
     isGitRepo "${1}" || \
-    failMsg "${1} does not appear to be a serpent tooling repo?"
+        failMsg "${1} does not appear to be a serpent tooling repo?"
 
     pushd "${1}"
     # Make the user deal with unclean git repos
@@ -205,7 +205,8 @@ function buildTool ()
 
 function buildAllTools ()
 {
-    # We can do this because this invocation doesn't touch existing bin dir/symlink
+    # We can do this because this invocation doesn't touch existing
+    # bin dir/symlink
     mkdir -pv ${HOME}/bin
     echo -e "\nBuilding moss, moss-container and boulder...\n"
     for repo in moss moss-container boulder; do
@@ -220,7 +221,7 @@ function buildAllTools ()
 function cleanTool ()
 {
     isGitRepo "${1}" || \
-    failMsg "${1} does not appear to be a serpent tooling repo?"
+        failMsg "${1} does not appear to be a serpent tooling repo?"
 
     pushd "${1}"
     if [[ -d build/ ]]; then
@@ -243,12 +244,13 @@ function cleanAllTools ()
 }
 
 REPO_FAIL=()
-# Will likely fail if the repo path exists locally, so this may not be a good solution
+# Will likely fail if the repo path exists locally,
+# so this may not be a good solution
 function cloneRepo()
 {
     # We want to run this from a clean clone root dir that isn't a git repo
     isGitRepo . && \
-    failMsg "Found a .git/ dir -- please run ${0} from the (unversioned) base serpent-os/ dir."
+        failMsg "Found a .git/ dir -- please run ${0} from the (unversioned) base serpent-os/ dir."
 
     echo -e "Cloning ${HTTPS_PREFIX}/${1}.git..."
     git clone --recurse-submodules "${HTTPS_PREFIX}/${1}.git"
@@ -271,7 +273,7 @@ function cloneRepo()
 function pullRepo()
 {
     isGitRepo "${1}" || \
-    failMsg "${1} does not appear to be a valid repo for git pull? Aborting."
+        failMsg "${1} does not appear to be a valid repo for git pull? Aborting."
 
     pushd "${1}"
     checkGitStatusClean
@@ -280,11 +282,13 @@ function pullRepo()
     if [[ $? -eq 0 ]]; then
         echo -e "\nChecking ${1} SSH push URI...\n"
         local PUSH_URI="$(git remote get-url --push origin)"
-        # Don't touch the push URI if the user has manually re-configured it to a different SSH push URI
+        # Don't touch the push URI if the user has manually re-configured it
+        # to a different SSH push URI
         if [[ "${PUSH_URI}" =~ "git@github.com:" && ! "${PUSH_URI}" =~ "${SSH_PREFIX}" ]]; then
             echo "'- Push URI has been set to a custom SSH URI, not attempting to reset it."
         else
-            # Reset push URI on the off chance that the current repo has been recloned manually
+            # Reset push URI on the off chance that the current repo
+            # has been recloned manually
             echo "'- Resetting push URI to default...'"
             git remote set-url --push origin "${SSH_PREFIX}/${1}.git"
         fi
@@ -299,7 +303,7 @@ function pullRepo()
     checkoutLegacyMossBranch "${1}"
 }
 
-# TODO: Switch back to the main branches once the LMDB
+# TODO: Switch back to the main branches once the moss LMDB
 #       port is ready. Use the 'legacy-moss-branch' for now.
 function checkoutLegacyMossBranch ()
 {
@@ -333,7 +337,7 @@ function updateAllRepos ()
 function pushRepo()
 {
     isGitRepo "${1}" || \
-    failMsg "${1} does not appear to be a valid repo for git push? Aborting."
+        failMsg "${1} does not appear to be a valid repo for git push? Aborting."
 
     pushd "${1}"
     checkGitStatusClean
