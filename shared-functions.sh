@@ -262,7 +262,8 @@ function cloneRepo()
         git -C "${1}" remote -v
         echo ""
     else
-        echo -e "\n- failed to git clone ${1}, not attempting to set push URI.\n"
+        echo -e "\n- failed to git clone --recurse-submodules ${1},\n"
+        echo -e "-- NOT attempting to set push URI for ${1}.\n"
         REPO_FAIL+=("${1}")
     fi
     checkoutLegacyMossBranch "${1}"
@@ -285,18 +286,19 @@ function pullRepo()
         # Don't touch the push URI if the user has manually re-configured it
         # to a different SSH push URI
         if [[ "${PUSH_URI}" =~ "git@github.com:" && ! "${PUSH_URI}" =~ "${SSH_PREFIX}" ]]; then
-            echo "'- Push URI has been set to a custom SSH URI, not attempting to reset it."
+            echo "- Push URI for ${1} has been changed manually, not attempting to reset it."
         else
             # Reset push URI on the off chance that the current repo
             # has been recloned manually
-            echo "'- Resetting push URI to default...'"
+            echo "- Resetting ${1} push URI to default..."
             git remote set-url --push origin "${SSH_PREFIX}/${1}.git"
         fi
         git remote -v
         echo ""
     else
         # We deliberately drop into the offending git repo
-        echo -e "\n - failed to git pull --rebase --recurse-submodules ${1}, not attempting to set push URI.\n"
+        echo -e "\n- failed to git pull --rebase --recurse-submodules ${1}"
+        echo -e "-- NOT attempting to set push URI for ${1}.\n"
         REPO_FAIL+=("${1}")
     fi
     popd
@@ -312,6 +314,7 @@ function checkoutLegacyMossBranch ()
         git -C "${1}" checkout legacy-moss-branch || \
             failMsg "- failed to git checkout the 'legacy-moss-branch' for ${1}!"
     fi
+    echo ""
 }
 
 function updateRepo ()
@@ -326,7 +329,7 @@ function updateAllRepos ()
         updateRepo "$repo"
     done
     # If we have a non-empty REPO_FAIL array, we're in trouble
-    [[ ${#REPO_FAIL[@]} -gt 0 ]] && failMsg "ERROR:\n\nFailed to update repos:\n\n${failClone[@]} !"
+    [[ ${#REPO_FAIL[@]} -gt 0 ]] && failMsg "ERROR:\n\nFailed to update repos:\n\n${REPO_FAIL[@]}\n"
 
     echo -e "List of directories in ${RUN_DIR}:\n"
     ls -1F --group-directories-first ${RUN_DIR}
