@@ -96,7 +96,9 @@ function checkPrereqs()
     pc[libcurl]='--atleast-version=7.5'
     pc[libxxhash]='--atleast-version=0.0.1'
     pc[libzstd]='--atleast-version=1'
-    pc[rocksdb]='--atleast-version=6.22'
+    #pc[rocksdb]='--atleast-version=6.22'
+    # upstream doesn't ship a .pc file -- it's patched in on major distros
+    #pc[lmdb]='--atleast-version=0.9'
 
     for p in ${!pc[@]}; do
         echo "- ${p} -devel package:"
@@ -118,8 +120,9 @@ function checkPrereqs()
 
     # For packages which typically don't have .pc files
     declare -A header
-    header[kernel]='linux/elf.h'
     header[glibc]='gnu/lib-names-64.h'
+    header[kernel]='linux/elf.h'
+    header[lmdb]='lmdb.h'
 
     for h in ${!header[@]}; do
         find /usr/include -name ${header[$h]} > /dev/null 2>&1
@@ -135,7 +138,8 @@ function checkPrereqs()
     # - it ensures runtime access to C libraries from Dlang C bindings
     declare -A lib
     lib[curl]=libcurl.so.4
-    lib[rocksdb]=librocksdb.so
+    #lib[rocksdb]=librocksdb.so
+    lib[lmdb]=liblmdb.so*
     lib[xxhash]=libxxhash.so.0
     lib[zstd]=libzstd.so.1
 
@@ -266,7 +270,6 @@ function cloneRepo()
         echo -e "-- NOT attempting to set push URI for ${1}.\n"
         REPO_FAIL+=("${1}")
     fi
-    checkoutLegacyMossBranch "${1}"
 }
 
 # Takes a single argument, which is the name of an existing known dir
@@ -302,20 +305,22 @@ function pullRepo()
         REPO_FAIL+=("${1}")
     fi
     popd
-    checkoutLegacyMossBranch "${1}"
+    checkoutMainBranch ${1}
 }
 
 # TODO: Switch back to the main branches once the moss LMDB
 #       port is ready. Use the 'legacy-moss-branch' for now.
-function checkoutLegacyMossBranch ()
+function checkoutMainBranch ()
 {
     if [[ ( "${1}" == "moss-core" || "${1}" == "moss-db" || "${1}" == "moss-deps" ) && -d "${1}" ]]; then
-        echo -e "\nChecking out the ${1} 'legacy-moss-branch'"
+        echo -e "\nChecking out the ${1} 'main' branch"
         git -C "${1}" checkout legacy-moss-branch || \
-            failMsg "- failed to git checkout the 'legacy-moss-branch' for ${1}!"
+            failMsg "- failed to git checkout the 'main' branch for ${1}!"
     fi
     echo ""
 }
+
+
 
 function updateRepo ()
 {
