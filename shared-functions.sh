@@ -314,7 +314,7 @@ function checkoutMainBranch ()
 {
     if [[ ( "${1}" == "moss-core" || "${1}" == "moss-db" || "${1}" == "moss-deps" ) && -d "${1}" ]]; then
         echo -e "\nChecking out the ${1} 'main' branch"
-        git -C "${1}" checkout legacy-moss-branch || \
+        git -C "${1}" checkout main || \
             failMsg "- failed to git checkout the 'main' branch for ${1}!"
     fi
     echo ""
