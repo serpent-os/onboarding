@@ -48,7 +48,7 @@ function isGitRepo ()
 function checkGitStatusClean ()
 {
     # we don't care about non-tracked files in git-status --short output
-    local GIT_STATUS="$(git status --short |grep -v ??)"
+    local GIT_STATUS="$(git -C ${1} status --short |grep -v ??)"
     if [[ "$GIT_STATUS" == "" ]]; then
         return 0
     else
@@ -183,10 +183,10 @@ function buildTool ()
 
     isGitRepo "${1}" || \
         failMsg "${1} does not appear to be a serpent tooling repo?"
+    checkGitStatusClean "${1}"
 
     pushd "${1}"
     # Make the user deal with unclean git repos
-    checkGitStatusClean
 
     # We want to unconditionally (re)configure the build, if a previous
     # build/ dir exists.
@@ -278,10 +278,10 @@ function pullRepo()
 {
     isGitRepo "${1}" || \
         failMsg "${1} does not appear to be a valid repo for git pull? Aborting."
+    checkGitStatusClean "${1}"
+    checkoutMainBranch ${1}
 
     pushd "${1}"
-    checkGitStatusClean
-
     git pull --rebase --recurse-submodules
     if [[ $? -eq 0 ]]; then
         echo -e "\nChecking ${1} SSH push URI...\n"
@@ -305,7 +305,6 @@ function pullRepo()
         REPO_FAIL+=("${1}")
     fi
     popd
-    checkoutMainBranch ${1}
 }
 
 # TODO: Switch back to the main branches once the moss LMDB
@@ -346,9 +345,9 @@ function pushRepo()
 {
     isGitRepo "${1}" || \
         failMsg "${1} does not appear to be a valid repo for git push? Aborting."
+    checkGitStatusClean "${1}"
 
     pushd "${1}"
-    checkGitStatusClean
 
     git push
     if [[ $? -gt 0 ]]; then
