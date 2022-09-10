@@ -75,6 +75,7 @@ function checkPrereqs()
     bin['LDC D compiler']=ldc2
     bin['Meson build tool']=meson
     bin['Ninja build tool']=ninja
+    bin['Sudo']=sudo
 
     echo -e "\nChecking for necessary tools/binaries"
     # 'all keys in the bin associative array'
@@ -183,26 +184,29 @@ function buildTool ()
 
     isGitRepo "${1}" || \
         failMsg "${1} does not appear to be a serpent tooling repo?"
+    # Make the user deal with unclean git repos
     checkGitStatusClean "${1}"
 
     pushd "${1}"
-    # Make the user deal with unclean git repos
 
     # We want to unconditionally (re)configure the build, if a previous
     # build/ dir exists.
     #
     # ${JOBS:-} is expanded to nothing if JOBS isn't set above
     # which implies using the number of available hardware threads
-    ( meson setup --wipe build/ || meson setup build/ ) && \
+    if [[ -d build/ ]]; then
+        echo -e "\nAttempting to Uninstall prior installs of ${1} ...\n"
+        sudo ninja uninstall -C build/
+    fi
+    echo -e "\nResetting ownership as a precaution ...\n"
+    sudo chown -Rc ${USER}:${USER} *
+    echo -e "\nConfiguring, building and installing ${1} ...\n"
+    ( meson setup --prefix=/usr --wipe build/ || meson setup --prefix=/usr build/ ) && \
     meson compile -C build/ ${JOBS:-} && \
-    ln -svf "${PWD}/build/${1}" "${HOME}/bin/"
+    sudo ninja install -C build/
     # error out noisily if any of the build steps fail
     if [[ $? -gt 0 ]]; then
         failMsg "\n  Building ${1} failed!\n  '- Aborting!\n"
-    fi
-    # boulder is "special" (... *ahem* ...)
-    if [[ "${1}" == "boulder" ]]; then
-        ln -svf "${PWD}/build/source/${1}/${1}" "${HOME}/bin/"
     fi
     popd
 }
@@ -212,14 +216,12 @@ function buildAllTools ()
     # We can do this because this invocation doesn't touch existing
     # bin dir/symlink
     mkdir -pv ${HOME}/bin
-    echo -e "\nBuilding moss, moss-container and boulder...\n"
+    echo -e "\nBuilding and installing moss, moss-container and boulder...\n"
     for repo in moss moss-container boulder; do
         buildTool "$repo"
     done
-    echo -e "\nSuccessfully built moss, moss-container and boulder.\n"
-    echo -e "Created the following symlinks:\n"
-    ls -l ${HOME}/bin/{moss,moss-container,boulder}
-    checkPath
+    echo -e "\nSuccessfully built and installed moss, moss-container and boulder:\n"
+    ls -l /usr/bin/{moss,moss-container,boulder}
 }
 
 function cleanTool ()
@@ -229,6 +231,10 @@ function cleanTool ()
 
     pushd "${1}"
     if [[ -d build/ ]]; then
+        echo -e "\nUninstalling ${1} ...\n"
+        sudo ninja uninstall -C build/
+        echo -e "\nResetting permissions for ${1} ...\n"
+        sudo chown -Rc ${USER}:${USER} *
         echo -e "\nCleaning ${1}/build/ ...\n"
         meson compile --clean -C build/
         echo -e "\nDone.\n"
@@ -318,8 +324,6 @@ function checkoutMainBranch ()
     fi
     echo ""
 }
-
-
 
 function updateRepo ()
 {
