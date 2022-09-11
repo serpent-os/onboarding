@@ -63,6 +63,32 @@ To get started packaging with the current pre-alpha quality serpent tooling, the
 
 The `build-all.sh` script builds the serpent tooling in the order listed above.
 
+## Initial moss setup
+
+To be able to actually use moss, its various databases need to be initialised.
+
+This can be accomplished with the following set of commands:
+
+    mkdir destdir
+    # add a moss .stone collection from which to install packages
+    moss -D destdir ar protosnek https://dev.serpentos.com/protosnek/x86_64/stone.index
+    # list available packages/.stones in the configured .stone collection
+    moss la -D destdir
+
+Install a useful (if minimal) set of .stones:
+
+    moss it -D destdir systemd coreutils util-linux dash bash which dbus dbus-broker nano
+
+Boot a systemd-nspawn container with the installed minimal Serpent OS system:
+
+    sudo systemd-nspawn -D destdir -b
+
+To stop and exit the systemd-nspawn container, issue the following command:
+
+    systemctl poweroff
+
+NB: Do NOT install `moss` to or within the destdir root used for the systemd-nspawn container, as this version is not compatible with the one used outside the container.
+
 ## Support
 
 Please refer to the [website](https://serpentos.com) for instructions on how to get in touch with the Serpent OS developers.
