@@ -10,8 +10,8 @@
 # serpent-os tooling repositories
 
 # Add escape codes for color
-Red='\033[0;31m'
-Color_Off='\033[0m'
+RED='\033[0;31m'
+RESET='\033[0m'
 
 RUN_DIR="${PWD}"
 
@@ -86,7 +86,7 @@ function checkPrereqs()
     for b in "${!bin[@]}" ; do
         command -v "${bin[$b]}" > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
-            echo -e "- ${b} (${bin[$b]}) ${Red}not found${Color_Off} in \$PATH."
+            echo -e "- ${b} (${bin[$b]}) ${RED}not found${RESET} in \$PATH."
             PREREQ_NOT_FOUND=1
         else
             echo "- found ${b} (${bin[$b]})"
@@ -109,7 +109,7 @@ function checkPrereqs()
         echo "- ${p} -devel package:"
         pkg-config --exists ${p}
         if [[ ! $? -eq 0 ]]; then
-            echo -e " - ${p} -devel package ${Red}not found.${Color_Off}"
+            echo -e " - ${p} -devel package ${RED}not found.${RESET}"
             PREREQ_NOT_FOUND=1
         else
             echo " - checking version requirement (${pc[$p]}):"
@@ -132,7 +132,7 @@ function checkPrereqs()
     for h in ${!header[@]}; do
         find /usr/include -name ${header[$h]} > /dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
-            echo -e "- ${h} -devel headers (${header[$h]}) ${Red}not found.${Color_Off}"
+            echo -e "- ${h} -devel headers (${header[$h]}) ${RED}not found.${RESET}"
             PREREQ_NOT_FOUND=1
         else
             echo "- found ${h} -devel headers (/usr/include/${header[$h]})"
@@ -152,7 +152,7 @@ function checkPrereqs()
     for l in ${!lib[@]}; do
         find /usr/lib{,64} -name ${lib[$l]} 2>/dev/null |xargs stat &>/dev/null
         if [[ ! $? -eq 0 ]]; then
-            echo -e "- ${l} runtime library (${lib[$l]}) ${Red}not found.${Color_Off}"
+            echo -e "- ${l} runtime library (${lib[$l]}) ${RED}not found.${RESET}"
             PREREQ_NOT_FOUND=1
         else
             echo "- found ${l} runtime library (${lib[$l]})"
