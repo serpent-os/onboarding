@@ -125,17 +125,17 @@ function checkPrereqs()
 
     # For packages which typically don't have .pc files
     declare -A header
-    header[glibc]='gnu/lib-names-64.h'
-    header[kernel]='linux/elf.h'
-    header[lmdb]='lmdb.h'
+    header[glibc]='/usr/include/gnu/lib-names-64.h'
+    header[kernel]='/usr/include/linux/elf.h'
+    header[lmdb]='/usr/include/lmdb.h'
 
     for h in ${!header[@]}; do
-        find /usr/include -name ${header[$h]} > /dev/null 2>&1
+        ls ${header[$h]} >/dev/null 2>&1
         if [[ ! $? -eq 0 ]]; then
             echo -e "- ${h} -devel headers (${header[$h]}) ${RED}not found.${RESET}"
             PREREQ_NOT_FOUND=1
         else
-            echo "- found ${h} -devel headers (/usr/include/${header[$h]})"
+            echo "- found ${h} -devel headers (${header[$h]})"
         fi
     done
 
