@@ -89,6 +89,17 @@ To stop and exit the systemd-nspawn container, issue the following command:
 
 **NB**: Do NOT install `moss` to or within the destdir root used for the systemd-nspawn container, as this version is not compatible with the one used outside the container.
 
+### Local moss collection support
+
+    # prepare a collection of stones, then cd into the folder containing the .stones and run
+    moss index # which creates a stone.index file for moss to reference
+    # add this collection to the list of known moss collections
+    moss remote add local file:///path/to/collection/stone.index
+    # when build/rebuild a recipe, you need to refresh the stone.index
+    moss index
+    # and then update the moss collection to make the newly created stone.index available to moss
+    moss remote ur
+
 ## Support
 
 Please refer to the [website](https://serpentos.com) for instructions on how to get in touch with the Serpent OS developers.
