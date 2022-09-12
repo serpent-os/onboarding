@@ -87,7 +87,7 @@ To stop and exit the systemd-nspawn container, issue the following command:
 
     systemctl poweroff
 
-NB: Do NOT install `moss` to or within the destdir root used for the systemd-nspawn container, as this version is not compatible with the one used outside the container.
+**NB**: Do NOT install `moss` to or within the destdir root used for the systemd-nspawn container, as this version is not compatible with the one used outside the container.
 
 ## Support
 
