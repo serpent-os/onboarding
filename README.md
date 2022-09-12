@@ -77,7 +77,7 @@ This can be accomplished with the following set of commands:
 
 Install a useful (if minimal) set of .stones:
 
-    moss it -D destdir systemd coreutils util-linux dash bash which dbus dbus-broker nano
+    moss it -D destdir nss systemd coreutils util-linux dash bash which dbus dbus-broker nano
 
 Boot a systemd-nspawn container with the installed minimal Serpent OS system:
 
