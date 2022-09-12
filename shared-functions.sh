@@ -52,7 +52,7 @@ function checkGitStatusClean ()
     if [[ "$GIT_STATUS" == "" ]]; then
         return 0
     else
-        failMsg "\n  Git repo ${PWD} contains uncommitted changes.\n  '- Aborting!\n"
+        failMsg "\n  Git repo ${1} contains uncommitted changes.\n  '- Aborting!\n"
     fi
 }
 
