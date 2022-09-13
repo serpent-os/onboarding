@@ -61,18 +61,18 @@ To get started packaging with the current pre-alpha quality serpent tooling, the
 - [`moss-container`](https://github.com/serpent-os/moss-container) (our lightweight container tool)
 - [`boulder`](https://github.com/serpent-os/boulder) (our system software build tool)
 
-The `build-all.sh` script builds the serpent tooling in the order listed above.
+The `./update.sh` script updates, builds and installs the serpent tooling to `/usr` in the order listed above.
 
 ## Initial moss setup
 
-To be able to actually use moss, its various databases need to be initialised.
+To be able to actually use moss, its various databases need to be initialised inside a clean folder, which will function as a root directory later on.
 
 This can be accomplished with the following set of commands:
 
     mkdir destdir
     # add a moss .stone collection from which to install packages
     moss -D destdir ar protosnek https://dev.serpentos.com/protosnek/x86_64/stone.index
-    # list available packages/.stones in the configured .stone collection
+    # list available packages/.stones in the configured moss .stone collection
     moss la -D destdir
 
 Install a useful (if minimal) set of .stones:
@@ -87,18 +87,20 @@ To stop and exit the systemd-nspawn container, issue the following command:
 
     systemctl poweroff
 
-**NB**: Do NOT install `moss` to or within the destdir root used for the systemd-nspawn container, as this version is not compatible with the one used outside the container.
+**NB**: Do NOT install `moss` to or within the destdir root used for the systemd-nspawn container, as this version downloaded from the protosnek collection is not compatible with the one used outside the container at this point in time.
 
 ### Local moss collection support
 
-    # prepare a collection of stones, then cd into the folder containing the .stones and run
-    moss index # which creates a stone.index file for moss to reference
-    # add this collection to the list of known moss collections
-    moss remote add local file:///path/to/collection/stone.index
-    # when build/rebuild a recipe, you need to refresh the stone.index
-    moss index
-    # and then update the moss collection to make the newly created stone.index available to moss
-    moss remote ur
+Moss and boulder now support profiles with priorities (higher priority overrides lower priority). Things are still a bit rough around the edges, but the following instructions should get you going with packaging in a local collection and using the .stones you put there as dependencies for subsequent builds:
+
+    # create /var/cache/boulder/collections/local-x86_64
+    sudo mkdir -pv /var/cache/boulder/collections/local-x86_64
+    # ensure your user has write access to the local moss .stone collection
+    sudo chown -Rc ${USER}:${USER} /var/cache/boulder/collections/local-x86-64
+    # dowload/prepare a collection of stones there, then create a moss stone.index file
+    moss idx /var/cache/boulder/collections/local-x86_64
+    # newest boulder ships with a profile configuration that enables the local collection, so no need to add it before building
+    sudo boulder build stone.yml -p local-x86_64
 
 ## Support
 
