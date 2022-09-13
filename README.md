@@ -63,9 +63,29 @@ To get started packaging with the current pre-alpha quality serpent tooling, the
 
 The `./update.sh` script updates, builds and installs the serpent tooling to `/usr` in the order listed above.
 
-## Initial moss setup
+## Introduction to the Serpent OS packaging process
 
-To be able to actually use moss, its various databases need to be initialised inside a clean folder, which will function as a root directory later on.
+    Build Recipe (stone.yml) -> [boulder build] -> (package.stone + metadata) -> [moss .stone collection] -> moss install package
+
+### Creating a stone.yml recipe template
+
+The high level flow is that packagers start by creating a `stone.yml` build recipe using `boulder new URI-to-tarball-they-wish-to-package`. This outputs a bare bones `stone.yml` recipe that will need fleshing out with summary, description, patches, build steps etc.
+
+### Building a stone.yml recipe into a binary package.stone
+
+To actually build a Serpent OS format .stone binary package, packagers invoke `sudo boulder build stone.yml`. This will parse the `stone.yml` build recipe and execute the various setup, build, install etc. steps specified in the recipe and discover + add relevant metadata, dependencies etc. to the finished `somepackage.stone` binary build artefact. The process will also produce a moss-readable binary format build manifest named `manifest.bin` plus a human readable `manifest.json` file containing essentially the same metadata as `manifest.bin` but only used for `git diff` purposes.
+
+### Adding package.stone to a moss .stone collection
+
+Binary moss .stone packages are kept in moss .stone collections, which each have a `stone.index` file containing the metadata from all the .stone packages in the collection. Thus, to be able to install a newly built package, it will need to be moved to a known collection, which then needs to have its `stone.index` file updated to include the metadata from the newly added .stone.
+
+Once the collection index has been updated, moss will be able to install the package that was just added to the collection.
+
+The following section details how to get started with this process.
+
+## Initial moss setup for running a Serpent OS systemd-nspawn container
+
+To be able to actually use moss, its various databases need to be initialised inside a clean folder, which will function as a root directory for a systemd-nspawn container later on.
 
 This can be accomplished with the following set of commands:
 
@@ -91,7 +111,7 @@ To stop and exit the systemd-nspawn container, issue the following command:
 
 ### Local moss collection support
 
-Moss and boulder now support profiles with priorities (higher priority overrides lower priority). Things are still a bit rough around the edges, but the following instructions should get you going with packaging in a local collection and using the .stones you put there as dependencies for subsequent builds:
+Moss and Boulder now support profiles that include multiple moss collections with priorities (higher priority overrides lower priority). Things are still a bit rough around the edges, but the following instructions should get you going with packaging in a local collection and using the .stones you put there as dependencies for subsequent builds:
 
     # create /var/cache/boulder/collections/local-x86_64
     sudo mkdir -pv /var/cache/boulder/collections/local-x86_64
@@ -99,7 +119,8 @@ Moss and boulder now support profiles with priorities (higher priority overrides
     sudo chown -Rc ${USER}:${USER} /var/cache/boulder/collections/local-x86-64
     # dowload/prepare a collection of stones there, then create a moss stone.index file
     moss idx /var/cache/boulder/collections/local-x86_64
-    # newest boulder ships with a profile configuration that enables the local collection, so no need to add it before building
+    # newest boulder ships with a profile configuration that enables using the
+    # local collection for dependencies, so no need to add it before building
     sudo boulder build stone.yml -p local-x86_64
 
 ## Support
