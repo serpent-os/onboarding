@@ -114,7 +114,7 @@ Moss and Boulder now support profiles that include multiple moss collections wit
     # create /var/cache/boulder/collections/local-x86_64
     sudo mkdir -pv /var/cache/boulder/collections/local-x86_64
     # ensure your user has write access to the local moss .stone collection
-    sudo chown -Rc ${USER}:${USER} /var/cache/boulder/collections/local-x86-64
+    sudo chown -Rc ${USER}:${USER} /var/cache/boulder/collections/local-x86_64
     # dowload/prepare a collection of stones there, then create a moss stone.index file
     moss -D sosroot/ idx /var/cache/boulder/collections/local-x86_64/
     # add the new collection to the list of known collections to moss (highest priority so far)
