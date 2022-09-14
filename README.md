@@ -97,7 +97,7 @@ This can be accomplished with the following set of commands:
 
 Install a useful (if minimal) set of .stones:
 
-    moss it -D sosroot/ nss systemd coreutils util-linux dash bash which dbus dbus-broker nano
+    moss it -D sosroot/ moss systemd coreutils util-linux nss dash bash which dbus dbus-broker nano
 
 Boot a systemd-nspawn container with the installed minimal Serpent OS system:
 
@@ -106,8 +106,6 @@ Boot a systemd-nspawn container with the installed minimal Serpent OS system:
 To stop and exit the systemd-nspawn container, issue the following command:
 
     systemctl poweroff
-
-**NB**: Do NOT install `moss` to or within the `sosroot/` dir used as the root for the systemd-nspawn container, as this version downloaded from the protosnek collection is not currently compatible with the one used outside the container at this point in time.
 
 ### Local moss collection support
 
