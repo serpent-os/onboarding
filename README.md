@@ -89,25 +89,25 @@ To be able to actually use moss, its various databases need to be initialised in
 
 This can be accomplished with the following set of commands:
 
-    mkdir destdir
+    mkdir sosroot/
     # add a moss .stone collection from which to install packages
-    moss -D destdir ar protosnek https://dev.serpentos.com/protosnek/x86_64/stone.index
+    moss -D sosroot/ ar protosnek https://dev.serpentos.com/protosnek/x86_64/stone.index
     # list available packages/.stones in the configured moss .stone collection
-    moss la -D destdir
+    moss la -D sosroot/
 
 Install a useful (if minimal) set of .stones:
 
-    moss it -D destdir nss systemd coreutils util-linux dash bash which dbus dbus-broker nano
+    moss it -D sosroot/ nss systemd coreutils util-linux dash bash which dbus dbus-broker nano
 
 Boot a systemd-nspawn container with the installed minimal Serpent OS system:
 
-    sudo systemd-nspawn -D destdir -b
+    sudo systemd-nspawn -D sosroot/ -b
 
 To stop and exit the systemd-nspawn container, issue the following command:
 
     systemctl poweroff
 
-**NB**: Do NOT install `moss` to or within the destdir root used for the systemd-nspawn container, as this version downloaded from the protosnek collection is not compatible with the one used outside the container at this point in time.
+**NB**: Do NOT install `moss` to or within the `sosroot/` dir used as the root for the systemd-nspawn container, as this version downloaded from the protosnek collection is not currently compatible with the one used outside the container at this point in time.
 
 ### Local moss collection support
 
@@ -118,13 +118,13 @@ Moss and Boulder now support profiles that include multiple moss collections wit
     # ensure your user has write access to the local moss .stone collection
     sudo chown -Rc ${USER}:${USER} /var/cache/boulder/collections/local-x86-64
     # dowload/prepare a collection of stones there, then create a moss stone.index file
-    moss -D destdir idx /var/cache/boulder/collections/local-x86_64/
+    moss -D sosroot/ idx /var/cache/boulder/collections/local-x86_64/
     # add the new collection to the list of known collections to moss (highest priority so far)
-    moss -D destdir ar local file:///var/cache/boulder/collections/local-x86_64/stone.index -p10
+    moss -D sosroot/ ar local file:///var/cache/boulder/collections/local-x86_64/stone.index -p10
     # poke moss to update its idea of available packages in the local collection
-    moss -D destdir ur
+    moss -D sosroot/ ur
     # Ask moss to list the available .stones (including now the ones in the local colleciton)
-    moss -D destdir la
+    moss -D sosroot/ la
     # newest boulder ships with a profile configuration that enables using the
     # local collection for dependencies, so no need to add it before building
     sudo boulder build stone.yml -p local-x86_64
