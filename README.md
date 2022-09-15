@@ -115,10 +115,10 @@ Moss and Boulder now support profiles that include multiple moss collections wit
     sudo mkdir -pv /var/cache/boulder/collections/local-x86_64
     # ensure your user has write access to the local moss .stone collection
     sudo chown -Rc ${USER}:${USER} /var/cache/boulder/collections/local-x86_64
-    # dowload/prepare a collection of stones there, then create a moss stone.index file
-    moss -D sosroot/ idx /var/cache/boulder/collections/local-x86_64/
     # add the new collection to the list of known collections to moss (highest priority so far)
     moss -D sosroot/ ar local file:///var/cache/boulder/collections/local-x86_64/stone.index -p10
+    # dowload/prepare a collection of stones there, then create a moss stone.index file
+    moss -D sosroot/ idx /var/cache/boulder/collections/local-x86_64/
     # poke moss to update its idea of available packages in the local collection
     moss -D sosroot/ ur
     # Ask moss to list the available .stones (including now the ones in the local colleciton)
@@ -126,6 +126,8 @@ Moss and Boulder now support profiles that include multiple moss collections wit
     # newest boulder ships with a profile configuration that enables using the
     # local collection for dependencies, so no need to add it before building
     sudo boulder build stone.yml -p local-x86_64
+
+**NB**: Whenever new .stones is added to a local collection, the index needs to be updated with `moss idx (...)` and `moss ur (...)`.
 
 ## Support
 
