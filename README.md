@@ -19,15 +19,19 @@ We use:
 
 For convenience, we maintain a `check-prereqs.sh` script, which will check for all necessary binaries, runtime libraries and development headers and report missing prerequisites.
 
-#### Dlang Toolchain installation
+#### LDC Dlang Toolchain installation (DMD not supported)
 
 The currently recommended way to install the Dlang toolchain is to use the official install script:
 
     curl -fsS https://dlang.org/install.sh | bash -s ldc
 
-Remember to source the appropriate environment initialisation script from your preferred shell's user config file.
+**NB:** Remember to _source_ ('activate') the appropriate environment initialisation script from your preferred shell's user config file.
 
 We tend to follow the newest upstream version of LDC quite closely.
+
+#### LDC Dlang Toolchain update
+
+One of our users kindly shared their experience updating an already installed LDC instance. [Read more here](https://forums.serpentos.com/d/22-how-to-test-moss/4)
 
 ### Repo structure
 
