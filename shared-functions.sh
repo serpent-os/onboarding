@@ -74,7 +74,7 @@ function checkPrereqs()
     bin['Codespell python tool']=codespell
     bin['Dlang code formatter']=dfmt
     bin['Dlang package manager']=dub
-    bin['Fakeroot tool']=fakeroot-sysv
+    bin['Fakeroot tool']=fakeroot
     bin['GNU Awk interpreter']=gawk
     bin['Git version control tool']=git
     bin['LDC D compiler']=ldc2
