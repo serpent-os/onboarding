@@ -22,6 +22,7 @@ HTTPS_PREFIX="https://github.com/serpent-os"
 CORE_REPOS=(
     boulder
     moss
+    moss-conductor
     moss-config
     moss-container
     moss-core
