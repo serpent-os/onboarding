@@ -31,7 +31,6 @@ CORE_REPOS=(
     moss-fetcher
     moss-format
     moss-vendor
-    zstdoubledee
 )
 
 function failMsg()
