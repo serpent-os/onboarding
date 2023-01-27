@@ -69,9 +69,14 @@ To get started packaging with the current pre-alpha quality serpent tooling, the
 
 The `./update.sh` script updates, builds and installs the serpent tooling to `/usr` in the order listed above.
 
-## Introduction to the Serpent OS packaging process
+## Short introduction to the Serpent OS packaging workflow
 
-    Build Recipe (stone.yml) -> [boulder build] -> (package.stone + metadata) -> [moss .stone collection] -> moss install package
+- Create new recipe: `boulder new <some uri to a package release>` -> outputs new `stone.yml` recipe
+- Edit new recipe: `nano -w stone.yml`
+- Build new recipe: `boulder build <stone.yml> -p local-x86_64` -> outputs `package.stone` + metadata (`manifest.*` build manifests) in current directory
+- Copy new package.stone to local binary collection and include it in index: `cp package.stone /var/cache/boulder/collections/local-x86_64/ && moss index /var/cache/boulder/collections/local-x86_64/`
+- Add local collection to collections searched by moss: `moss add remote local-x86_64 file:///var/cache/boulder/collections/local-x86_64/stone.index -p 10`
+- Install package from local collection: `moss install package`
 
 ### Creating a stone.yml recipe template
 
@@ -97,7 +102,7 @@ This can be accomplished with the following set of commands:
 
     mkdir sosroot/
     # add a moss .stone collection from which to install packages
-    moss -D sosroot/ ar protosnek https://dev.serpentos.com/protosnek/x86_64/stone.index
+    moss -D sosroot/ ar main https://dev.serpentos.com/main/x86_64/stone.index
     # list available packages/.stones in the configured moss .stone collection
     moss la -D sosroot/
 
@@ -109,9 +114,13 @@ Boot a systemd-nspawn container with the installed minimal Serpent OS system:
 
     sudo systemd-nspawn -D sosroot/ -b
 
-To stop and exit the systemd-nspawn container, issue the following command:
+To stop and exit the systemd-nspawn container, issue the following command from within the container:
 
     systemctl poweroff
+
+If the container locks up or stops responding, you can use `machinectl` to stop it from outside the container:
+
+    sudo machinectl poweroff sosroot
 
 ### Local moss collection support
 
@@ -132,7 +141,7 @@ Moss and Boulder now support profiles that include multiple moss collections wit
     # local collection for dependencies, so no need to add it before building
     sudo boulder build stone.yml -p local-x86_64
 
-**NB**: Whenever a new .stone is added to a local collection, the local collection index needs to be updated with `moss idx (...)` and `moss ur (...)`.
+**NB**: Currently, whenever a new .stone is added to a local collection, the local collection index needs to be updated with `moss idx (...)` and `moss ur (...)`.
 
 ## Support
 
