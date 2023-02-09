@@ -190,7 +190,7 @@ function buildTool ()
 	local MEM_AVAILABLE=$(gawk '/MemAvailable/ { GiB = $2/(1024*1024); print int(GiB) }' /proc/meminfo)
 	local MAX_JOBS=$((${MEM_AVAILABLE}/2))
 	if [[ ${MAX_JOBS} -lt ${THREADS} ]]; then
-            local JOBS=${MAX_JOBS}
+            local JOBS="-j${MAX_JOBS}"
             echo -e "\n  INFO: Restricting to ${JOBS} parallel boulder build jobs (Free RAM: \~${MEM_AVAILABLE} GiB)\n"
         else
             echo -e "\n  INFO: Using ${THREADS} parallel boulder build jobs\n"
