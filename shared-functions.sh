@@ -181,11 +181,20 @@ function checkPath ()
 # below the individual clones (clone root)
 function buildTool ()
 {
-    # Limit memory consumption to <10GiB worst case when compiling the
-    # drafter/ licence stuff in boulder, due to each active ldc2
-    # instance using up to 1.6GiB resident memory.
-    if [[ "${1}" == "boulder" && $(nproc) -gt 4 ]]; then
-        local JOBS="-j6"
+    # Conservatively limit memory consumption during compilation of
+    # the drafter/ licence stuff in boulder, due to each active ldc2
+    # instance using up to 1.6GiB resident memory worst case.
+    local THREADS=$(nproc)
+    # Assume that at least 2 GiB is available!
+    if [[ "${1}" == "boulder" && ${THREADS} -gt 1 ]]; then
+	local MEM_AVAILABLE=$(gawk '/MemAvailable/ { GiB = $2/(1024*1024); print int(GiB) }' /proc/meminfo)
+	local MAX_JOBS=$((${MEM_AVAILABLE}/2))
+	if [[ ${MAX_JOBS} -lt ${THREADS} ]]; then
+            local JOBS=${MAX_JOBS}
+            echo -e "\n  INFO: Restricting to ${JOBS} parallel boulder build jobs (Free RAM: \~${MEM_AVAILABLE} GiB)\n"
+        else
+            echo -e "\n  INFO: Using ${THREADS} parallel boulder build jobs\n"
+        fi
     fi
 
     isGitRepo "${1}" || \
