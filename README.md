@@ -71,9 +71,9 @@ The `./update.sh` script updates, builds and installs the serpent tooling to `/u
 
 ## Short introduction to the Serpent OS packaging workflow
 
-- Create new recipe: `boulder new <some uri to a package release>` -> outputs new `stone.yml` recipe
+- Create new recipe: `boulder new https://some.uri/to-a-package-version.tar.gz` -> outputs new `stone.yml` recipe
 - Edit new recipe: `nano -w stone.yml`
-- Build new recipe: `boulder build <stone.yml> -p local-x86_64` -> outputs `package.stone` + metadata (`manifest.*` build manifests) in current directory
+- Build new recipe: `boulder build stone.yml -p local-x86_64` -> outputs `package.stone` + metadata (`manifest.*` build manifests) in current directory
 - Copy new package.stone to local binary collection and include it in index: `cp package.stone /var/cache/boulder/collections/local-x86_64/ && moss index /var/cache/boulder/collections/local-x86_64/`
 - Add local collection to collections searched by moss: `moss add remote local-x86_64 file:///var/cache/boulder/collections/local-x86_64/stone.index -p 10`
 - Install package from local collection: `moss install package`
