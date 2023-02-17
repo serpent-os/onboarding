@@ -216,7 +216,7 @@ function buildTool ()
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
     echo -e "\nConfiguring, building and installing ${1} ...\n"
-    ( meson setup --prefix=/usr --wipe build/ || meson setup --prefix=/usr build/ ) && \
+    ( meson setup -Dbuildtype=debugoptimized --prefix=/usr --wipe build/ || meson setup --prefix=/usr build/ ) && \
     meson compile -C build/ ${JOBS:-} && \
     sudo ninja install -C build/
     # error out noisily if any of the build steps fail
