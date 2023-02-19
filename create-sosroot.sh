@@ -31,6 +31,7 @@ PACKAGES=(
     iproute2
     less
     linux-kvm
+    man-db
     moss
     moss-container
     nano
