@@ -6,9 +6,13 @@
 #
 
 # create-sosroot.sh:
-# script for conveniently creating a working /var/lib/machines/sosroot/
-# directory suitable for use as the root in a systemd-nspawn container
-# or a linux-kvm kernel driven qemu-kvm virtual machine.
+# script for conveniently creating a clean /var/lib/machines/sosroot/
+# directory suitable for use as the root in serpent os systemd-nspawn
+# container or linux-kvm kernel driven qemu-kvm virtual machine.
+
+# target dirs
+SOSROOT="/var/lib/machines/sosroot"
+BOULDERCACHE="/var/cache/boulder"
 
 # base packages
 PACKAGES=(
@@ -26,9 +30,11 @@ PACKAGES=(
     inetutils
     iproute2
     less
+    linux-kvm
     moss
     moss-container
     nano
+    neofetch
     nss
     openssh
     procps
@@ -45,28 +51,87 @@ PACKAGES=(
     which
 )
 
-# packages specific to qemu-kvm support
-KVM_PACKAGES=(
-    linux-kvm
-)
+# utility functions
+BOLD='\033[1m'
+RED='\033[0;31m'
+RESET='\033[0m'
+YELLOW='\033[0;33m'
 
-# target dir
-SOSROOT="/var/lib/machines/sosroot"
-BOULDERCACHE="/var/cache/boulder"
+printInfo () {
+    local INFO="${BOLD}INFO${RESET}"
+    echo -e "${INFO} ${*}"
+}
 
-sudo rm -rf "${SOSROOT}"
-sudo mkdir -pv "${SOSROOT}"
-sudo moss -D "${SOSROOT}" ar volatile https://dev.serpentos.com/volatile/x86_64/stone.index -p0
+printWarning () {
+    local WARNING="${YELLOW}${BOLD}WARNING${RESET}"
+    echo -e "${WARNING} ${*}"
+}
+
+printError () {
+    local ERROR="${RED}${BOLD}ERROR${RESET}"
+    echo -e "${ERROR} ${*}"
+}
+
+die() {
+    printError "${*}\n"
+    exit 1
+}
+
+showHelp() {
+    cat <<EOF
+
+----
+
+You can now start a systemd-nspawn container with:
+
+ sudo systemd-nspawn --bind=${BOULDERCACHE}/ -D ${SOSROOT}/ -b
+
+Do a 'systemctl poweroff' inside the container to shut it down.
+
+The container can also be shut down with:
+
+ sudo machinectl stop sosroot
+
+in a shell outside the container.
+
+EOF
+}
+
+MSG="Removing old ${SOSROOT} directory..."
+printInfo "${MSG}"
+sudo rm -rf "${SOSROOT}" || die "${MSG} failed, exiting."
+
+MSG="Creating new ${SOSROOT} directory..."
+printInfo "${MSG}"
+sudo mkdir -pv "${SOSROOT}" || die "${MSG} failed, exiting."
+
+MSG="Adding volatile serpent os repository..."
+printInfo "${MSG}"
+sudo moss -D "${SOSROOT}" ar volatile https://dev.serpentos.com/volatile/x86_64/stone.index -p0 || die "${MSG} failed, exiting."
+
+MSG="Installing packages..."
+printInfo "${MSG}"
 sudo moss -D "${SOSROOT}" install "${PACKAGES[@]}"
 
-# prepare local-x86_64 profile directory
-sudo mkdir -pv ${BOULDERCACHE}/collections/local-x86_64/
-sudo moss index ${BOULDERCACHE}/collections/local-x86_64/
-sudo moss -D "${SOSROOT}" ar local-x86_64 file://${BOULDERCACHE}/collections/local-x86_64/stone.index -p10
+MSG="Preparing local-x86_64 profile directory..."
+printInfo "${MSG}"
+sudo mkdir -pv ${BOULDERCACHE}/collections/local-x86_64/ || die "${MSG} failed, exiting."
 
-# kvm
-sudo mkdir -pv "${SOSROOT}"/etc/
-sudo cp -va /etc/protocols "${SOSROOT}"/etc/
+MSG="Creating a moss stone.index file for the local-x86_64 profile..."
+printInfo "${MSG}"
+sudo moss index ${BOULDERCACHE}/collections/local-x86_64/ || die "${MSG} failed, exiting."
 
-echo -e "\nstart a systemd-nspawn container with:\n"
-echo -e "  sudo systemd-nspawn --bind=${BOULDERCACHE}/ -D ${SOSROOT}/ -b\n"
+MSG="Adding local-x86_64 profile to list of active repositories..."
+printInfo "${MSG}"
+sudo moss -D "${SOSROOT}" ar local-x86_64 file://${BOULDERCACHE}/collections/local-x86_64/stone.index -p10 || die "${MSG} failed, exiting."
+
+MSG="Ensuring that an /etc directory exists in ${SOSROOT}..."
+printInfo "${MSG}"
+sudo mkdir -pv "${SOSROOT}"/etc/ || die "${MSG} failed, exiting."
+
+MSG="Ensuring that various network protocols function..."
+printInfo "${MSG}"
+sudo cp -va /etc/protocols "${SOSROOT}"/etc/ || die "${MSG} failed, exiting."
+
+showHelp
+
