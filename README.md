@@ -98,21 +98,15 @@ The following section details how to get started with this process.
 
 To be able to actually use moss, its various databases need to be initialised inside a clean folder, which will function as a root directory for a systemd-nspawn container later on.
 
-This can be accomplished with the following set of commands:
+This can be accomplished by executing:
 
-    mkdir sosroot/
-    # add a moss .stone collection from which to install packages
-    moss -D sosroot/ ar main https://dev.serpentos.com/main/x86_64/stone.index
-    # list available packages/.stones in the configured moss .stone collection
-    moss la -D sosroot/
+    onboarding/create-sosroot.sh
 
-Install a useful (if minimal) set of .stones:
-
-    moss it -D sosroot/ moss systemd coreutils util-linux nss dash bash which dbus dbus-broker nano
+which will install a suitable set of packages for use in a systemd-nspawn container.
 
 Boot a systemd-nspawn container with the installed minimal Serpent OS system:
 
-    sudo systemd-nspawn -D sosroot/ -b
+    sudo systemd-nspawn --bind=/var/cache/boulder/ -D /var/lib/machines/sosroot/ -b
 
 To stop and exit the systemd-nspawn container, issue the following command from within the container:
 
