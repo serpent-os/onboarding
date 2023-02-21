@@ -19,19 +19,20 @@ RUN_DIR="${PWD}"
 SSH_PREFIX="git@github.com:serpent-os"
 HTTPS_PREFIX="https://github.com/serpent-os"
 
-CORE_REPOS=(
-    boulder
-    moss
-    moss-conductor
-    moss-config
-    moss-container
-    moss-core
-    moss-db
-    moss-deps
-    moss-fetcher
-    moss-format
-    moss-vendor
-)
+# Make it easier to selectively check out branches per project
+declare -A CORE_REPOS
+CORE_REPOS['boulder']=main
+CORE_REPOS['moss']=main
+CORE_REPOS['moss-conductor']=main
+CORE_REPOS['moss-config']=main
+CORE_REPOS['moss-container']=main
+CORE_REPOS['moss-core']=main
+CORE_REPOS['moss-db']=main
+CORE_REPOS['moss-deps']=main
+CORE_REPOS['moss-fetcher']=main
+CORE_REPOS['moss-format']=main
+CORE_REPOS['moss-vendor']=main
+
 
 function failMsg()
 {
@@ -300,7 +301,7 @@ function pullRepo()
     isGitRepo "${1}" || \
         failMsg "${1} does not appear to be a valid repo for git pull? Aborting."
     checkGitStatusClean "${1}"
-    checkoutMainBranch ${1}
+    checkoutBranch ${1}
 
     pushd "${1}"
     git pull --rebase --recurse-submodules
@@ -328,15 +329,14 @@ function pullRepo()
     popd
 }
 
-# TODO: Switch back to the main branches once the moss LMDB
-#       port is ready. Use the 'legacy-moss-branch' for now.
-function checkoutMainBranch ()
+# Make it easier to do automated checkouts and builds of branches
+# (useful for testing PRs spannning individual repo boundaries)
+function checkoutBranch ()
 {
-    if [[ ( "${1}" == "moss-core" || "${1}" == "moss-db" || "${1}" == "moss-deps" ) && -d "${1}" ]]; then
-        echo -e "\nChecking out the ${1} 'main' branch"
-        git -C "${1}" checkout main || \
-            failMsg "- failed to git checkout the 'main' branch for ${1}!"
-    fi
+    local branch="${CORE_REPOS[${1}]}"
+    echo -e "\nChecking out the ${1} ${branch} branch"
+    git -C "${1}" checkout "${branch}" || \
+        failMsg "- failed to git checkout the ${branch} branch for ${1}!"
     echo ""
 }
 
@@ -348,7 +348,7 @@ function updateRepo ()
 function updateAllRepos ()
 {
     echo -e "\nUpdating all serpent tooling repos to newest upstream version...\n"
-    for repo in ${CORE_REPOS[@]}; do
+    for repo in ${!CORE_REPOS[@]}; do
         updateRepo "$repo"
     done
     # If we have a non-empty REPO_FAIL array, we're in trouble
