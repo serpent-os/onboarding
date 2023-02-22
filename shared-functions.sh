@@ -23,7 +23,6 @@ HTTPS_PREFIX="https://github.com/serpent-os"
 declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
 CORE_REPOS['moss']=main
-CORE_REPOS['moss-conductor']=main
 CORE_REPOS['moss-config']=main
 CORE_REPOS['moss-container']=main
 CORE_REPOS['moss-core']=main
