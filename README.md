@@ -57,7 +57,9 @@ curl https://raw.githubusercontent.com/serpent-os/onboarding/main/init.sh |bash
 
 #### A note on RAM requirements
 
-Note that the build process can require up to 12 GiB of Resident memory, so a system with **16 GiB of RAM is recommended** and it may be necessary to turn on zram (or zswap) to make `boulder` compile successfully.
+A system with at least **8 GiB of RAM is recommended** and compressed swap (zram or zswap) might make the build experience smoother whilst a webbrowser is open.
+
+In addition, the onboarding build scripts will attempt to tune the amount of `boulder` parallel build jobs to fit with the available memory on the system.
 
 ### Serpent tooling build order
 
