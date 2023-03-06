@@ -103,7 +103,7 @@ function checkPrereqs()
     pc[libcurl]='--atleast-version=7.5'
     pc[libxxhash]='--atleast-version=0.0.1'
     pc[libzstd]='--atleast-version=1'
-    pc[mount]='--atleast-version=2.38.1'
+    pc[mount]='--atleast-version=2.37'
     #pc[rocksdb]='--atleast-version=6.22'
     # upstream doesn't ship a .pc file -- it's patched in on major distros
     #pc[lmdb]='--atleast-version=0.9'
