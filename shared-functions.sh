@@ -301,7 +301,7 @@ function pullRepo()
     isGitRepo "${1}" || \
         failMsg "${1} does not appear to be a valid repo for git pull? Aborting."
     checkGitStatusClean "${1}"
-    checkoutBranch ${1}
+    checkoutRef ${1}
 
     pushd "${1}"
     git pull --rebase --recurse-submodules
@@ -331,12 +331,12 @@ function pullRepo()
 
 # Make it easier to do automated checkouts and builds of branches
 # (useful for testing PRs spannning individual repo boundaries)
-function checkoutBranch ()
+function checkoutRef ()
 {
     local branch="${CORE_REPOS[${1}]}"
-    echo -e "\nChecking out the ${1} ${branch} branch"
+    echo -e "\nChecking out the ${1} ${branch} branch/tag"
     git -C "${1}" checkout "${branch}" || \
-        failMsg "- failed to git checkout the ${branch} branch for ${1}!"
+        failMsg "- failed to git checkout the ${branch} branch/tag for ${1}!"
     echo ""
 }
 
