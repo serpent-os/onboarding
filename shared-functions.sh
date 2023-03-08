@@ -340,10 +340,10 @@ function activateCommitHooks ()
     pushd "${1}"
     local addHooks="serpent-style/activate-commit-hooks.sh"
     if [[ -x "${addHooks}" ]]; then
-       ${addHooks}
+        ${addHooks}
     fi
-    echo -e "\nActive serpent-style commit hooks in ${PWD}:\n"
-    ls -l .git/hooks/ |grep -E '^l'
+    echo -e "\nActive serpent-style git hooks in ${PWD}:\n"
+    ls -l .git/hooks/ |grep 'serpent-style'
     echo ""
     popd
 }
