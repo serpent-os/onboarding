@@ -199,6 +199,11 @@ function buildTool ()
 
     pushd "${1}"
 
+    if [[ -x ./serpent-style/activate-git-hooks.sh ]]; then
+        ./serpent-style/activate-git-hooks.sh && \
+        echo -e "\nUnconditionally updated git hooks.\n"
+    fi
+
     # We want to unconditionally (re)configure the build, if a previous
     # build/ dir exists.
     #
@@ -274,7 +279,6 @@ function cloneRepo()
 
     echo -e "Cloning ${HTTPS_PREFIX}/${1}.git..."
     git clone --recurse-submodules "${HTTPS_PREFIX}/${1}.git"
-
     # Only set up push URI on successful clone
     if [[ $? -eq 0 ]]; then
         echo -e "\nSetting up ${1} SSH push URI...\n"
