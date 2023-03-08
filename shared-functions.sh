@@ -22,15 +22,9 @@ HTTPS_PREFIX="https://github.com/serpent-os"
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
+CORE_REPOS['libmoss']=main
 CORE_REPOS['moss']=main
-CORE_REPOS['moss-config']=main
 CORE_REPOS['moss-container']=main
-CORE_REPOS['moss-core']=main
-CORE_REPOS['moss-db']=main
-CORE_REPOS['moss-deps']=main
-CORE_REPOS['moss-fetcher']=main
-CORE_REPOS['moss-format']=main
-CORE_REPOS['moss-vendor']=main
 
 
 function failMsg()
@@ -118,7 +112,7 @@ function checkPrereqs()
             echo " - checking version requirement (${pc[$p]}):"
             pkg-config --print-errors ${pc[$p]} ${p}
             if [[ ! $? -eq 0 ]]; then
-                echo "  - ${p} -devel package installed, but does not meet version requirement."
+                echo "  - ${p} -devel package installed, but ${RED}does not meet version requirement.${RESET}"
                 PREREQ_NOT_FOUND=1
             else
                 echo "  - found ${p}.pc file which meets version requirement."
