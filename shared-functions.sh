@@ -198,12 +198,6 @@ function buildTool ()
     checkGitStatusClean "${1}"
 
     pushd "${1}"
-
-    if [[ -x ./serpent-style/activate-git-hooks.sh ]]; then
-        ./serpent-style/activate-git-hooks.sh && \
-        echo -e "\nUnconditionally updated git hooks.\n"
-    fi
-
     # We want to unconditionally (re)configure the build, if a previous
     # build/ dir exists.
     #
@@ -338,9 +332,28 @@ function checkoutRef ()
     echo ""
 }
 
+function activateCommitHooks ()
+{
+    isGitRepo "${1}" || \
+        failMsg "${1} does not appear to be a valid repo for adding git commit hooks? Aborting."
+
+    pushd "${1}"
+    local addHooks="serpent-style/activate-commit-hooks.sh"
+    if [[ -x "${addHooks}" ]]; then
+       ${addHooks}
+    fi
+    echo -e "\nActive serpent-style commit hooks in ${PWD}:\n"
+    ls -l .git/hooks/ |grep -E '^l'
+    echo ""
+    popd
+}
+
 function updateRepo ()
 {
     isGitRepo "${1}" && pullRepo "${1}" || cloneRepo "${1}"
+    if [[ $? -eq 0 ]]; then
+        activateCommitHooks "${1}"
+    fi
 }
 
 function updateAllRepos ()
