@@ -338,9 +338,11 @@ function activateCommitHooks ()
         failMsg "${1} does not appear to be a valid repo for adding git commit hooks? Aborting."
 
     pushd "${1}"
-    local addHooks="serpent-style/activate-commit-hooks.sh"
+    local addHooks="./serpent-style/activate-git-hooks.sh"
     if [[ -x "${addHooks}" ]]; then
         ${addHooks}
+    else
+        ls -l "${addHooks}"
     fi
     echo -e "\nActive serpent-style git hooks in ${PWD}:\n"
     ls -l .git/hooks/ |grep 'serpent-style'
