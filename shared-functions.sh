@@ -9,10 +9,15 @@
 # Base library of functions for the scripts used to manage all prerequisite
 # serpent-os tooling repositories
 
+# install prefix for tooling (allow environment override)
+PREFIX="${PREFIX:-/usr}"
+echo -e "\nUsing install PREFIX: $PREFIX\n"
+
 # Add escape codes for color
 RED='\033[0;31m'
 RESET='\033[0m'
 
+# Capture current run-dir
 RUN_DIR="${PWD}"
 
 # Download via HTTPS (negotiates faster than SSH), push via SSH
@@ -210,7 +215,7 @@ function buildTool ()
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
     echo -e "\nConfiguring, building and installing ${1} ...\n"
-    ( meson setup -Dbuildtype=debugoptimized --prefix=/usr --wipe build/ || meson setup --prefix=/usr build/ ) && \
+    ( meson setup -Dbuildtype=debugoptimized --prefix="${PREFIX}" --wipe build/ || meson setup --prefix="${PREFIX}" build/ ) && \
     meson compile -C build/ ${JOBS:-} && \
     sudo ninja install -C build/
     # error out noisily if any of the build steps fail
@@ -230,7 +235,7 @@ function buildAllTools ()
         buildTool "$repo"
     done
     echo -e "\nSuccessfully built and installed moss, moss-container and boulder:\n"
-    ls -l /usr/local/bin/{moss,moss-container,boulder}
+    ls -l ${PREFIX}/bin/{moss,moss-container,boulder}
 }
 
 function cleanTool ()
