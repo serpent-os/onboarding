@@ -29,8 +29,8 @@ RESET='\033[0m'
 RUN_DIR="${PWD}"
 
 # Download via HTTPS (negotiates faster than SSH), push via SSH
-SSH_PREFIX="git@github.com:${GH_PREFIX}"
-HTTPS_PREFIX="https://github.com/${GH_PREFIX}"
+SSH_PREFIX="git@github.com:${GH_NAMESPACE}"
+HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
