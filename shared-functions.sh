@@ -9,9 +9,17 @@
 # Base library of functions for the scripts used to manage all prerequisite
 # serpent-os tooling repositories
 
+## Environment overrides:
+#
+# Github prefix (useful for when preparing PRs from a user repo)
+GH_NAMESPACE="${GH_NAMESPACE:-serpent-os}"
+echo -e "\nUsing GH_NAMESPACE: ${GH_NAMESPACE}"
+#
 # install prefix for tooling (allow environment override)
-PREFIX="${PREFIX:-/usr}"
-echo -e "\nUsing install PREFIX: $PREFIX\n"
+INSTALL_PREFIX="${INSTALL_PREFIX:-/usr}"
+echo -e "\nUsing INSTALL_PREFIX: ${INSTALL_PREFIX}"
+#
+## Environment overrides END
 
 # Add escape codes for color
 RED='\033[0;31m'
@@ -21,8 +29,8 @@ RESET='\033[0m'
 RUN_DIR="${PWD}"
 
 # Download via HTTPS (negotiates faster than SSH), push via SSH
-SSH_PREFIX="git@github.com:serpent-os"
-HTTPS_PREFIX="https://github.com/serpent-os"
+SSH_PREFIX="git@github.com:${GH_PREFIX}"
+HTTPS_PREFIX="https://github.com/${GH_PREFIX}"
 
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
@@ -215,7 +223,7 @@ function buildTool ()
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
     echo -e "\nConfiguring, building and installing ${1} ...\n"
-    ( meson setup -Dbuildtype=debugoptimized --prefix="${PREFIX}" --wipe build/ || meson setup --prefix="${PREFIX}" build/ ) && \
+    ( meson setup -Dbuildtype=debugoptimized --prefix="${INSTALL_PREFIX}" --wipe build/ || meson setup --prefix="${INSTALL_PREFIX}" build/ ) && \
     meson compile -C build/ ${JOBS:-} && \
     sudo ninja install -C build/
     # error out noisily if any of the build steps fail
@@ -235,7 +243,7 @@ function buildAllTools ()
         buildTool "$repo"
     done
     echo -e "\nSuccessfully built and installed moss, moss-container and boulder:\n"
-    ls -l ${PREFIX}/bin/{moss,moss-container,boulder}
+    ls -l ${INSTALL_PREFIX}/bin/{moss,moss-container,boulder}
 }
 
 function cleanTool ()
