@@ -85,6 +85,7 @@ function checkPrereqs()
     bin['Fakeroot tool']=fakeroot
     bin['GNU Awk interpreter']=gawk
     bin['Git version control tool']=git
+    bin['Go task']=task
     bin['LDC D compiler']=ldc2
     bin['Meson build tool']=meson
     bin['Ninja build tool']=ninja
