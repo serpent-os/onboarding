@@ -85,7 +85,7 @@ function checkPrereqs()
     bin['Fakeroot tool']=fakeroot
     bin['GNU Awk interpreter']=gawk
     bin['Git version control tool']=git
-    bin['Go task']=task
+    bin['Go-task']=go-task
     bin['LDC D compiler']=ldc2
     bin['Meson build tool']=meson
     bin['Ninja build tool']=ninja
@@ -94,13 +94,20 @@ function checkPrereqs()
     echo -e "\nChecking for necessary tools/binaries"
     # 'all keys in the bin associative array'
     for b in "${!bin[@]}" ; do
-        command -v "${bin[$b]}" > /dev/null 2>&1
-        if [[ ! $? -eq 0 ]]; then
+        # distributions use 'go-task', upstream uses 'task' ¯\_(ツ)_/¯
+        local found
+        if [[ ${bin[$b]} =~ "go-task" ]]; then
+            found=$(command -v task || command -v go-task)
+        else
+            found=$(command -v "${bin[$b]}")
+        fi
+        if [[ -z $found ]]; then
             echo -e "- ${b} (${bin[$b]}) ${RED}not found${RESET} in \$PATH."
             PREREQ_NOT_FOUND=1
         else
-            echo "- found ${b} (${bin[$b]})"
+            echo "- found ${b} (${found})"
         fi
+        unset local
     done
 
     echo -e "\nChecking for necessary development libraries and headers (-devel packages):"
