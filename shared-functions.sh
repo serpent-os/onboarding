@@ -233,7 +233,7 @@ function buildTool ()
     echo -e "\nConfiguring, building and installing ${1} ...\n"
     ( meson setup -Dbuildtype=debugoptimized --prefix="${INSTALL_PREFIX}" --wipe build/ || meson setup --prefix="${INSTALL_PREFIX}" build/ ) && \
     meson compile -C build/ ${JOBS:-} && \
-    sudo ninja install -C build/
+    sudo meson install --no-rebuild -C build/
     # error out noisily if any of the build steps fail
     if [[ $? -gt 0 ]]; then
         failMsg "\n  Building ${1} failed!\n  '- Aborting!\n"
