@@ -36,7 +36,7 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
 CORE_REPOS['libmoss']=main
-#CORE_REPOS['moss']=main
+#CORE_REPOS['moss']=main  # superseded by moss-rs
 CORE_REPOS['moss-container']=main
 
 
@@ -216,9 +216,9 @@ function buildTool ()
     local THREADS=$(nproc)
     # Assume that at least 2 GiB is available!
     if [[ "${1}" == "boulder" && ${THREADS} -gt 1 ]]; then
-	local MEM_AVAILABLE=$(gawk '/MemAvailable/ { GiB = $2/(1024*1024); print GiB }' /proc/meminfo)
-	local MAX_JOBS=$(echo "${MEM_AVAILABLE}" |gawk '{ print int($1/1.6) }')
-	if [[ ${MAX_JOBS} -lt ${THREADS} ]]; then
+        local MEM_AVAILABLE=$(gawk '/MemAvailable/ { GiB = $2/(1024*1024); print GiB }' /proc/meminfo)
+        local MAX_JOBS=$(echo "${MEM_AVAILABLE}" |gawk '{ print int($1/1.6) }')
+        if [[ ${MAX_JOBS} -lt ${THREADS} ]]; then
             local JOBS="-j${MAX_JOBS}"
             echo -e "\n  INFO: Restricting to ${JOBS} parallel boulder build jobs (Free RAM: ~${MEM_AVAILABLE} GiB)\n"
         else
