@@ -86,7 +86,7 @@ function checkPrereqs()
     bin['GNU Awk interpreter']=gawk
     bin['Git version control tool']=git
     bin['Go-task']=go-task
-    bin['LDC D compiler']=ldc2
+    bin['LDC D compiler v1.32.2']=ldc2
     bin['Meson build tool']=meson
     bin['Ninja build tool']=ninja
     bin['Sudo']=sudo
@@ -98,6 +98,17 @@ function checkPrereqs()
         local found
         if [[ ${bin[$b]} =~ "go-task" ]]; then
             found=$(command -v task || command -v go-task)
+        elif [[ ${bin[$b]} == "ldc2" ]]; then
+            local candidate=$(command -v "${bin[$b]}")
+            if [[ -n $candidate ]]; then
+                local ldc_version=$(ldc2 --version |head -n1 |grep -o '1.32.2')
+                if [[ "${ldc_version}" != "1.32.2" ]]; then
+                    echo -e "- ${b} (${bin[$b]}) version $ldc_version ${RED}not found${RESET} in \$PATH."
+                    PREREQ_NOT_FOUND=1
+                else
+                    found="$candidate"
+                fi
+            fi
         else
             found=$(command -v "${bin[$b]}")
         fi
