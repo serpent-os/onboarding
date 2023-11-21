@@ -36,7 +36,7 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
 CORE_REPOS['libmoss']=main
-CORE_REPOS['moss']=main
+#CORE_REPOS['moss']=main
 CORE_REPOS['moss-container']=main
 
 
@@ -259,12 +259,12 @@ function buildAllTools ()
     # We can do this because this invocation doesn't touch existing
     # bin dir/symlink
     mkdir -pv ${HOME}/bin
-    echo -e "\nBuilding and installing moss, moss-container and boulder...\n"
-    for repo in moss moss-container boulder; do
+    echo -e "\nBuilding and installing moss-container and boulder...\n"
+    for repo in moss-container boulder; do
         buildTool "$repo"
     done
-    echo -e "\nSuccessfully built and installed moss, moss-container and boulder:\n"
-    ls -l ${INSTALL_PREFIX}/bin/{moss,moss-container,boulder}
+    echo -e "\nSuccessfully built and installed moss-container and boulder:\n"
+    ls -l ${INSTALL_PREFIX}/bin/{moss-container,boulder}
 }
 
 function cleanTool ()
