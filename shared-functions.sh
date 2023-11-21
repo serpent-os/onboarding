@@ -103,8 +103,9 @@ function checkPrereqs()
             if [[ -n $candidate ]]; then
                 local ldc_version=$(ldc2 --version |head -n1 |grep -o '1.32.2')
                 if [[ "${ldc_version}" != "1.32.2" ]]; then
-                    echo -e "- ${b} (${bin[$b]}) version $ldc_version ${RED}not found${RESET} in \$PATH."
+                    echo -e "- ${b} (${bin[$b]}) version 1.32.2 ${RED}not found${RESET} in \$PATH."
                     PREREQ_NOT_FOUND=1
+                    continue
                 else
                     found="$candidate"
                 fi
