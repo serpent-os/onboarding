@@ -6,7 +6,9 @@ For a general overview of the goals of Serpent OS and how to get in touch, see o
 
 ## Onboarding
 
-Serpent OS tooling is written primarily in [Dlang](https://dlang.org/).
+Serpent OS tooling is being redesigned in [Rust](https://rustlang.org).
+
+The legacy PoC tooling was written primarily in [Dlang](https://dlang.org/).
 
 ### Prerequisites
 
@@ -24,7 +26,7 @@ For convenience, we maintain a `check-prereqs.sh` script, which will check for a
 
 The currently recommended way to install the Dlang toolchain is to use the official install script:
 
-    curl -fsS https://dlang.org/install.sh | bash -s ldc
+    curl -fsS https://dlang.org/install.sh | bash -s ldc-1.32.2
 
 **NB:** Remember to _source_ ('activate') the appropriate environment initialisation script from your preferred shell's user config file.
 
