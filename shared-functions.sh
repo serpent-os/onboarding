@@ -115,6 +115,7 @@ function checkPrereqs()
     # Value is the invocation parameters for a successful pkg-config match
     # FIXME: Determine and set correct minimum versions
     declare -A pc
+    pc[dbus-1]='--atleast-version=1.14'
     #pc[libgit2]='--atleast-version=1.3.0'
     pc[libcurl]='--atleast-version=7.5'
     pc[libxxhash]='--atleast-version=0.0.1'
