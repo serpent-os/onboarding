@@ -30,7 +30,7 @@ The currently recommended way to install the Dlang toolchain is to use the offic
 
 **NB:** Remember to _source_ ('activate') the appropriate environment initialisation script from your preferred shell's user config file.
 
-We tend to follow the newest upstream version of LDC quite closely.
+For the moment, the latest supported ldc version is 1.32.2.
 
 #### LDC Dlang Toolchain update
 
