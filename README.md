@@ -15,12 +15,17 @@ The legacy PoC tooling was written primarily in [Dlang](https://dlang.org/).
 We use:
 
 - [`git`](https://git-scm.com/) to manage development.
-- [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our binaries. 
+- [`cargo`](https://doc.rust-lang.org/cargo/index.html) and [`rustc`](https://doc.rust-lang.org/rustc/index.html) to build our new binaries.
+- [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our legacy binaries.
 - [`dfmt`](https://github.com/dlang-community/dfmt) to format our code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with LDC. Our scripts assume that `dfmt` is available in `$PATH`.
 - the python module `codespell` for spell checking. Install it from your distribution's package manager.
 - the [`task`](https://github.com/go-task/task/releases) go application to maintain frequently executed job compositions without having to clutter a repository with Makefiles or the like.
 
 For convenience, we maintain a `check-prereqs.sh` script, which will check for all necessary binaries, runtime libraries and development headers and report missing prerequisites.
+
+#### Rust Toolchain installation
+
+Most Linux distributions ship recent versions of both `cargo` and `rustc`. Consult your distribution's documentation for more information on how to install the relevant packages.
 
 #### LDC Dlang Toolchain installation (DMD not supported)
 
