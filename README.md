@@ -16,8 +16,9 @@ We use:
 
 - [`git`](https://git-scm.com/) to manage development.
 - [`cargo`](https://doc.rust-lang.org/cargo/index.html) and [`rustc`](https://doc.rust-lang.org/rustc/index.html) to build our new binaries.
+- [`rustfm`](https://rust-lang.github.io/rustfmt/) to formout or Rust code consistently.
 - [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our legacy binaries.
-- [`dfmt`](https://github.com/dlang-community/dfmt) to format our code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with LDC. Our scripts assume that `dfmt` is available in `$PATH`.
+- [`dfmt`](https://github.com/dlang-community/dfmt) to format our DLang code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with LDC. Our scripts assume that `dfmt` is available in `$PATH`.
 - the python module `codespell` for spell checking. Install it from your distribution's package manager.
 - the [`task`](https://github.com/go-task/task/releases) go application to maintain frequently executed job compositions without having to clutter a repository with Makefiles or the like.
 
@@ -25,7 +26,7 @@ For convenience, we maintain a `check-prereqs.sh` script, which will check for a
 
 #### Rust Toolchain installation
 
-Most Linux distributions ship recent versions of both `cargo` and `rustc`. Consult your distribution's documentation for more information on how to install the relevant packages.
+Most Linux distributions ship recent versions of both `cargo`, `rustc` and `rustfmt`. Consult your distribution's documentation for more information on how to install the relevant packages.
 
 #### LDC Dlang Toolchain installation (DMD not supported)
 
@@ -43,7 +44,9 @@ One of our users kindly shared their experience updating an already installed LD
 
 ### Repo structure
 
-We use a flat repository structure where all Dlang `meson`-controlled subprojects are expected to be checked out concurrently.
+Our Rust tooling repository is structured with multiple workspaces, so only a single repo needs to be cloned, which makes development more convenient.
+
+For our legacy DLang tooling, we use a flat repository structure where all Dlang `meson`-controlled subprojects are expected to be checked out concurrently.
 
 This forces a "lockstep" development methodology, which means that whatever is currently checked out in each subproject is what any given binary will be built against.
 
@@ -69,14 +72,14 @@ A system with at least **8 GiB of RAM is recommended** and compressed swap (zram
 
 In addition, the onboarding build scripts will attempt to tune the amount of `boulder` parallel build jobs to fit with the available memory on the system.
 
-### Serpent tooling build order
+### Legacy serpent DLang tooling build order
 
-To get started packaging with the current pre-alpha quality serpent tooling, the following binaries need to be built in the order listed below:
+To get started packaging with the legacy pre-alpha quality serpent tooling, the following binaries need to be built in the order listed below:
 
 - [`moss-container`](https://github.com/serpent-os/moss-container) (our lightweight container tool)
 - [`boulder`](https://github.com/serpent-os/boulder) (our system software build tool)
 
-The `./update.sh` script updates, builds and installs the serpent tooling to `/usr` in the order listed above.
+The `./update.sh` script updates, builds and installs the serpent tooling to `/usr` in the order listed above. It also installs the new Rust-based moss binary.
 
 ## Short introduction to the Serpent OS packaging workflow
 
