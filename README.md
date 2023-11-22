@@ -68,7 +68,6 @@ In addition, the onboarding build scripts will attempt to tune the amount of `bo
 
 To get started packaging with the current pre-alpha quality serpent tooling, the following binaries need to be built in the order listed below:
 
-- [`moss`](https://github.com/serpent-os/moss) (our system software management tool)
 - [`moss-container`](https://github.com/serpent-os/moss-container) (our lightweight container tool)
 - [`boulder`](https://github.com/serpent-os/boulder) (our system software build tool)
 
@@ -89,13 +88,13 @@ The high level flow is that packagers start by creating a `stone.yml` build reci
 
 ### Building a stone.yml recipe into a binary package.stone
 
-To actually build a Serpent OS format .stone binary package, packagers invoke `sudo boulder build stone.yml`. This will parse the `stone.yml` build recipe and execute the various setup, build, install etc. steps specified in the recipe and discover + add relevant metadata, dependencies etc. to the finished `somepackage.stone` binary build artefact. The process will also produce a moss-readable binary format build manifest named `manifest.bin` plus a human readable `manifest.json` file containing essentially the same metadata as `manifest.bin` but only used for `git diff` purposes.
+To actually build a Serpent OS format .stone binary package, packagers invoke `sudo boulder build stone.yml`. This will parse the `stone.yml` build recipe and execute the various setup, build, install etc. steps specified in the recipe and discover + add relevant metadata, dependencies etc. to the finished `somepackage.stone` binary build artefact. The process will also produce a moss-readable binary format build manifest named `manifest.$arch.bin` plus a human readable `manifest.jsonc` file containing essentially the same metadata as the binary manifest, but only used for `git diff` purposes.
 
-### Adding package.stone to a moss .stone collection
+### Adding package.stone to a moss repository
 
-Binary moss .stone packages are kept in moss .stone collections, which each have a `stone.index` file containing the metadata from all the .stone packages in the collection. Thus, to be able to install a newly built package, it will need to be moved to a known collection, which then needs to have its `stone.index` file updated to include the metadata from the newly added .stone.
+Binary moss .stone packages are kept in moss repositories, which each have a `stone.index` file containing the metadata from all the .stone packages in the repo. Thus, to be able to install a newly built package, it will need to be moved to a known moss repo, which then needs to have its `stone.index` file updated to include the metadata from the newly added .stone.
 
-Once the collection index has been updated, moss will be able to install the package that was just added to the collection.
+Once the moss repo index has been updated, moss will be able to install the package that was just added to the moss repo.
 
 The following section details how to get started with this process.
 
@@ -121,26 +120,26 @@ If the container locks up or stops responding, you can use `machinectl` to stop 
 
     sudo machinectl poweroff sosroot
 
-### Local moss collection support
+### Local moss repo support
 
-Moss and Boulder now support profiles that include multiple moss collections with priorities (higher priority overrides lower priority). Things are still a bit rough around the edges, but the following instructions should get you going with packaging in a local collection and using the .stones you put there as dependencies for subsequent builds:
+Moss and Boulder now support profiles that include multiple moss repos with priorities (higher priority overrides lower priority). Things are still a bit rough around the edges, but the following instructions should get you going with packaging in a local collection and using the .stones you put there as dependencies for subsequent builds:
 
-    # create /var/cache/boulder/collections/local-x86_64
-    sudo mkdir -pv /var/cache/boulder/collections/local-x86_64
+    # create /var/cache/boulder/repos/local-x86_64
+    sudo mkdir -pv /var/cache/boulder/repos/local-x86_64
     # ensure your user has write access to the local moss .stone collection
-    sudo chown -Rc ${USER}:${USER} /var/cache/boulder/collections/local-x86_64
-    # dowload/prepare a collection of stones there (can be empty initially),
+    sudo chown -Rc ${USER}:${USER} /var/cache/boulder/repos/local-x86_64
+    # dowload/prepare a set of stones there (can be empty initially),
     # then create a moss stone.index file
-    moss -D sosroot/ idx /var/cache/boulder/collections/local-x86_64/
+    moss -D sosroot/ idx /var/cache/boulder/repos/local-x86_64/
     # add the new collection to the list of known collections to moss (highest priority so far)
-    moss -D sosroot/ ar local file:///var/cache/boulder/collections/local-x86_64/stone.index -p10
+    moss -D sosroot/ ar local file:///var/cache/boulder/repos/local-x86_64/stone.index -p10
     # Ask moss to list the available .stones (including now the ones in the local colleciton)
     moss -D sosroot/ la
     # newest boulder ships with a profile configuration that enables using the
     # local collection for dependencies, so no need to add it before building
     sudo boulder build stone.yml -p local-x86_64
 
-**NB**: Currently, whenever a new .stone is added to a local collection, the local collection index needs to be updated with `moss idx (...)` and `moss ur (...)`.
+**NB**: Currently, whenever a new .stone is added to a local repo, the local repo index needs to be updated with `moss index (...)`.
 
 ## Support
 
