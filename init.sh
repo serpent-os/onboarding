@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 #
-# SPDX-License-Identifier: Zlib
+# SPDX-License-Identifier: MPL-2.0
 #
-# Copyright: © 2022 Serpent OS Developers
+# Copyright: © 2023 Serpent OS Developers
 #
 
 cat << EOF > ./update.sh
 #!/usr/bin/env bash
 #
-# SPDX-License-Identifier: Zlib
+# SPDX-License-Identifier: MPL-2.0
 #
-# Copyright: © 2022 Serpent OS Developers
+# Copyright: © 2023 Serpent OS Developers
 #
 
 function failMsg ()
