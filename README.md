@@ -161,4 +161,4 @@ We're a friendly bunch and will likely welcome your contributions.
 
 ## License
 
-Serpent OS is licensed under the Zlib license.
+Serpent OS is licensed under the MPL-2.0 license. Legacy tooling is licensed under the Zlib license.
