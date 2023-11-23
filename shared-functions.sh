@@ -283,7 +283,7 @@ function buildRustTools ()
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
     echo -e "\nConfiguring, building and installing ${repo} ...\n"
-    rm -v target/{build,debug}/moss
+    rm -v target/{debug,release}/moss
     cargo build -p moss && \
       sudo install -Dm00755 target/debug/moss /usr/bin/moss
     # error out noisily if any of the build steps fail
