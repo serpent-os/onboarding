@@ -36,9 +36,8 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
 CORE_REPOS['libmoss']=main
-#CORE_REPOS['moss']=main  # superseded by moss-rs
+CORE_REPOS['moss-rs']=main
 CORE_REPOS['moss-container']=main
-
 
 function failMsg()
 {
@@ -79,6 +78,7 @@ function checkPrereqs()
     bin['Binutils']=ld
     bin['C compiler']=cc
     bin['CMake build tool']=cmake
+    bin['Rust Cargo package manager']=cargo
     bin['Codespell python tool']=codespell
     bin['Dlang code formatter']=dfmt
     bin['Dlang package manager']=dub
@@ -89,6 +89,8 @@ function checkPrereqs()
     bin['LDC D compiler v1.32.2']=ldc2
     bin['Meson build tool']=meson
     bin['Ninja build tool']=ninja
+    bin['Rust compiler']=rustc
+    #bin['Rust code formatter']=rustfmt
     bin['Sudo']=sudo
 
     echo -e "\nChecking for necessary tools/binaries"
@@ -209,7 +211,7 @@ function checkPath ()
 # build tool (= dir under git control) specified in ${1}
 # this function is assumed to be run from the directory
 # below the individual clones (clone root)
-function buildTool ()
+function buildDLangTool ()
 {
     # Conservatively limit memory consumption during compilation of
     # the drafter/ licence stuff in boulder, due to each active ldc2
@@ -255,17 +257,42 @@ function buildTool ()
     popd
 }
 
-function buildAllTools ()
+function buildAllDLangTools ()
 {
     # We can do this because this invocation doesn't touch existing
     # bin dir/symlink
-    mkdir -pv ${HOME}/bin
+    mkdir -pv ${INSTALL_PREFIX}/bin
     echo -e "\nBuilding and installing moss-container and boulder...\n"
     for repo in moss-container boulder; do
-        buildTool "$repo"
+        buildDLangTool "$repo"
     done
     echo -e "\nSuccessfully built and installed moss-container and boulder:\n"
-    ls -l ${INSTALL_PREFIX}/bin/{moss-container,boulder}
+    ls -lF ${INSTALL_PREFIX}/bin/{moss-container,boulder}
+}
+
+function buildRustTools ()
+{
+    local repo=moss-rs
+    echo -e "\nBuilding and installing moss...\n"
+    isGitRepo "$repo" || \
+        failMsg "${repo} does not appear to be a serpent tooling repo?"
+    # Make the user deal with unclean git repos
+    checkGitStatusClean "${repo}"
+
+    pushd "${repo}"
+    echo -e "\nResetting ownership as a precaution ...\n"
+    sudo chown -Rc ${USER}:${USER} *
+    echo -e "\nConfiguring, building and installing ${repo} ...\n"
+    rm -v target/{build,debug}/moss
+    cargo build -p moss && \
+      sudo install -Dm00755 target/debug/moss /usr/bin/moss
+    # error out noisily if any of the build steps fail
+    if [[ $? -gt 0 ]]; then
+        failMsg "\n  Building ${1} failed!\n  '- Aborting!\n"
+    fi
+    popd    
+    echo -e "\nSuccessfully built and installed moss:\n"
+    ls -lF ${INSTALL_PREFIX}/bin/moss
 }
 
 function cleanTool ()
@@ -288,10 +315,10 @@ function cleanTool ()
     popd
 }
 
-function cleanAllTools ()
+function cleanAllDlangTools ()
 {
     echo -e "\nRunning 'meson compile --clean' for all serpent repos...\n"
-    for repo in ${CORE_REPOS[@]}; do
+    for repo in boulder libstone moss-container; do
         cleanTool "$repo"
     done
 
@@ -430,7 +457,7 @@ function pushAllRepos ()
     for repo in ${CORE_REPOS[@]}; do
         pushRepo "$repo"
     done
-    echo -e "\nAll serpent tooling repos successfully updated to newest upstream version.\n"
+    echo -e "\nSuccessfully pushed newest local code to all serpent tooling repos.\n"
 }
 
 function updateUsage ()

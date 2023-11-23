@@ -30,7 +30,7 @@ Most Linux distributions ship recent versions of both `cargo`, `rustc` and `rust
 
 #### LDC Dlang Toolchain installation (DMD not supported)
 
-For the moment, the latest **supported ldc version** is _**1.32.2**_.
+_The latest supported ldc version is **1.32.2**_.
 
 The currently recommended way to install the Dlang toolchain is to use the official install script:
 

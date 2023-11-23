@@ -25,4 +25,4 @@ ONBOARDING_DIR=$(dirname "${0}")
 
 source "${ONBOARDING_DIR}/shared-functions.sh"
 
-buildAllTools
+buildAllDlangTools && buildRustTools
