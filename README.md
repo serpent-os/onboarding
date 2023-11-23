@@ -16,7 +16,7 @@ We use:
 
 - [`git`](https://git-scm.com/) to manage development.
 - [`cargo`](https://doc.rust-lang.org/cargo/index.html) and [`rustc`](https://doc.rust-lang.org/rustc/index.html) to build our Rust binaries.
-- [`rustfm`](https://rust-lang.github.io/rustfmt/) to format our Rust code consistently.
+- [`rustfmt`](https://rust-lang.github.io/rustfmt/) to format our Rust code consistently.
 - [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our legacy DLang binaries.
 - [`dfmt`](https://github.com/dlang-community/dfmt) to format our legacy DLang code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with LDC. Our scripts assume that `dfmt` is available in `$PATH`.
 - the python module `codespell` for spell checking. Install it from your distribution's package manager.
