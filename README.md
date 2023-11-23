@@ -15,12 +15,12 @@ The legacy PoC tooling was written primarily in [Dlang](https://dlang.org/).
 We use:
 
 - [`git`](https://git-scm.com/) to manage development.
-- [`cargo`](https://doc.rust-lang.org/cargo/index.html) and [`rustc`](https://doc.rust-lang.org/rustc/index.html) to build our new binaries.
-- [`rustfm`](https://rust-lang.github.io/rustfmt/) to formout or Rust code consistently.
-- [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our legacy binaries.
-- [`dfmt`](https://github.com/dlang-community/dfmt) to format our DLang code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with LDC. Our scripts assume that `dfmt` is available in `$PATH`.
+- [`cargo`](https://doc.rust-lang.org/cargo/index.html) and [`rustc`](https://doc.rust-lang.org/rustc/index.html) to build our Rust binaries.
+- [`rustfm`](https://rust-lang.github.io/rustfmt/) to format our Rust code consistently.
+- [`meson`](https://mesonbuild.com/) (with [`dub`](https://dub.pm/) as a fallback) and [`ldc2`](https://wiki.dlang.org/LDC) to build our legacy DLang binaries.
+- [`dfmt`](https://github.com/dlang-community/dfmt) to format our legacy DLang code consistently. Consult the [`dfmt` README](https://github.com/dlang-community/dfmt#installation) for how to build it with LDC. Our scripts assume that `dfmt` is available in `$PATH`.
 - the python module `codespell` for spell checking. Install it from your distribution's package manager.
-- the [`task`](https://github.com/go-task/task/releases) go application to maintain frequently executed job compositions without having to clutter a repository with Makefiles or the like.
+- the [`go-task`](https://github.com/go-task/task/releases) Go application to maintain frequently executed job compositions without having to clutter a repository with Makefiles or the like.
 
 For convenience, we maintain a `check-prereqs.sh` script, which will check for all necessary binaries, runtime libraries and development headers and report missing prerequisites.
 
@@ -30,13 +30,13 @@ Most Linux distributions ship recent versions of both `cargo`, `rustc` and `rust
 
 #### LDC Dlang Toolchain installation (DMD not supported)
 
+For the moment, the latest **supported ldc version** is _**1.32.2**_.
+
 The currently recommended way to install the Dlang toolchain is to use the official install script:
 
     curl -fsS https://dlang.org/install.sh | bash -s ldc-1.32.2
 
 **NB:** Remember to _source_ ('activate') the appropriate environment initialisation script from your preferred shell's user config file.
-
-For the moment, the latest supported ldc version is 1.32.2.
 
 #### LDC Dlang Toolchain update
 
