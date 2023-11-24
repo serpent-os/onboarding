@@ -107,7 +107,7 @@ sudo mkdir -pv "${SOSROOT}" || die "${MSG} failed, exiting."
 
 MSG="Adding volatile serpent os repository..."
 printInfo "${MSG}"
-sudo moss -D "${SOSROOT}" ar volatile https://dev.serpentos.com/volatile/x86_64/stone.index -p0 || die "${MSG} failed, exiting."
+sudo moss -D "${SOSROOT}" repo add volatile https://dev.serpentos.com/volatile/x86_64/stone.index -p0 || die "${MSG} failed, exiting."
 
 MSG="Installing packages..."
 printInfo "${MSG}"
@@ -115,15 +115,15 @@ sudo moss -D "${SOSROOT}" install "${PACKAGES[@]}"
 
 MSG="Preparing local-x86_64 profile directory..."
 printInfo "${MSG}"
-sudo mkdir -pv ${BOULDERCACHE}/collections/local-x86_64/ || die "${MSG} failed, exiting."
+sudo mkdir -pv ${BOULDERCACHE}/repos/local-x86_64/ || die "${MSG} failed, exiting."
 
 MSG="Creating a moss stone.index file for the local-x86_64 profile..."
 printInfo "${MSG}"
-sudo moss index ${BOULDERCACHE}/collections/local-x86_64/ || die "${MSG} failed, exiting."
+sudo moss index ${BOULDERCACHE}/repos/local-x86_64/ || die "${MSG} failed, exiting."
 
 MSG="Adding local-x86_64 profile to list of active repositories..."
 printInfo "${MSG}"
-sudo moss -D "${SOSROOT}" ar local-x86_64 file://${BOULDERCACHE}/collections/local-x86_64/stone.index -p10 || die "${MSG} failed, exiting."
+sudo moss -D "${SOSROOT}" repo add local-x86_64 file://${BOULDERCACHE}/repos/local-x86_64/stone.index -p10 || die "${MSG} failed, exiting."
 
 MSG="Ensuring that an /etc directory exists in ${SOSROOT}..."
 printInfo "${MSG}"
@@ -134,4 +134,3 @@ printInfo "${MSG}"
 sudo cp -va /etc/protocols "${SOSROOT}"/etc/ || die "${MSG} failed, exiting."
 
 showHelp
-
