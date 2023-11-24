@@ -35,6 +35,7 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
+CORE_REPOS['img-tests']=main
 CORE_REPOS['libmoss']=main
 CORE_REPOS['moss-rs']=main
 CORE_REPOS['moss-container']=main
