@@ -79,15 +79,15 @@ To get started packaging with the legacy pre-alpha quality serpent tooling, the 
 - [`moss-container`](https://github.com/serpent-os/moss-container) (our lightweight container tool)
 - [`boulder`](https://github.com/serpent-os/boulder) (our system software build tool)
 
-The `./update.sh` script updates, builds and installs the serpent tooling to `/usr` in the order listed above. It also installs the new Rust-based moss binary.
+The `./update.sh` script updates, builds and installs the serpent tooling to `/usr` in the order listed above. It also builds and installs the new Rust-based moss binary.
 
 ## Short introduction to the Serpent OS packaging workflow
 
 - Create new recipe: `boulder new https://some.uri/to-a-package-version.tar.gz` -> outputs new `stone.yml` recipe
 - Edit new recipe: `nano -w stone.yml`
 - Build new recipe: `boulder build stone.yml -p local-x86_64` -> outputs `package.stone` + metadata (`manifest.*` build manifests) in current directory
-- Copy new package.stone to local binary collection and include it in index: `cp package.stone /var/cache/boulder/collections/local-x86_64/ && moss index /var/cache/boulder/collections/local-x86_64/`
-- Add local collection to collections searched by moss: `moss add remote local-x86_64 file:///var/cache/boulder/collections/local-x86_64/stone.index -p 10`
+- Copy new package.stone to the local binary moss repo and include it in index: `cp package.stone /var/cache/boulder/repos/local-x86_64/ && moss index /var/cache/boulder/repos/local-x86_64/`
+- Add local repo  to repos searched by moss: `moss repo add local-x86_64 file:///var/cache/boulder/repos/local-x86_64/stone.index -p 10`
 - Install package from local collection: `moss install package`
 
 ### Creating a stone.yml recipe template
@@ -112,19 +112,20 @@ To be able to actually use moss, its various databases need to be initialised in
 
 This can be accomplished by executing:
 
-    onboarding/create-sosroot.sh
+    cd img-tests/
+    ./create-sosroot.sh
 
 which will install a suitable set of packages for use in a systemd-nspawn container.
 
 Boot a systemd-nspawn container with the installed minimal Serpent OS system:
 
-    sudo systemd-nspawn --bind=/var/cache/boulder/ -D /var/lib/machines/sosroot/ -b
+    sudo systemd-nspawn --bind=/var/cache/boulder/ -D ./sosroot/ -b
 
 To stop and exit the systemd-nspawn container, issue the following command from within the container:
 
-    systemctl poweroff
+    poweroff
 
-If the container locks up or stops responding, you can use `machinectl` to stop it from outside the container:
+If the container locks up or stops responding, you might be able to use `machinectl` to stop it from outside the container:
 
     sudo machinectl poweroff sosroot
 
@@ -134,17 +135,17 @@ Moss and Boulder now support profiles that include multiple moss repos with prio
 
     # create /var/cache/boulder/repos/local-x86_64
     sudo mkdir -pv /var/cache/boulder/repos/local-x86_64
-    # ensure your user has write access to the local moss .stone collection
+    # ensure your user has write access to the local moss repo
     sudo chown -Rc ${USER}:${USER} /var/cache/boulder/repos/local-x86_64
     # dowload/prepare a set of stones there (can be empty initially),
     # then create a moss stone.index file
-    moss -D sosroot/ idx /var/cache/boulder/repos/local-x86_64/
+    moss -D sosroot/ index /var/cache/boulder/repos/local-x86_64/
     # add the new collection to the list of known collections to moss (highest priority so far)
-    moss -D sosroot/ ar local file:///var/cache/boulder/repos/local-x86_64/stone.index -p10
+    moss -D sosroot/ repo add local-x86_64 file:///var/cache/boulder/repos/local-x86_64/stone.index -p10
     # Ask moss to list the available .stones (including now the ones in the local colleciton)
-    moss -D sosroot/ la
+    moss -D sosroot/ list available
     # newest boulder ships with a profile configuration that enables using the
-    # local collection for dependencies, so no need to add it before building
+    # local repo for dependencies, so no need to add it before building
     sudo boulder build stone.yml -p local-x86_64
 
 **NB**: Currently, whenever a new .stone is added to a local repo, the local repo index needs to be updated with `moss index (...)`.
