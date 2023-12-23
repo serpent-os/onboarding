@@ -165,7 +165,12 @@ function checkPrereqs()
     header[lmdb]='/usr/include/lmdb.h'
 
     for h in ${!header[@]}; do
-        ls ${header[$h]} >/dev/null 2>&1
+        if [[ "$h" == "glibc" ]]; then
+            # debian and fedora differ here
+            ls ${header[$h]} >/dev/null 2>&1 || ls /usr/include/x86_64-linux-gnu/gnu/lib-names-64.h >/dev/null 2>&1
+        else
+            ls ${header[$h]} >/dev/null 2>&1
+        fi
         if [[ ! $? -eq 0 ]]; then
             echo -e "- ${h} -devel headers (${header[$h]}) ${RED}not found.${RESET}"
             PREREQ_NOT_FOUND=1
