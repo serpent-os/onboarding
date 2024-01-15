@@ -37,7 +37,7 @@ declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
 CORE_REPOS['img-tests']=main
 CORE_REPOS['libmoss']=main
-CORE_REPOS['moss-rs']=main
+CORE_REPOS['moss']=main
 CORE_REPOS['moss-container']=main
 
 function failMsg()
@@ -278,7 +278,7 @@ function buildAllDLangTools ()
 
 function buildRustTools ()
 {
-    local repo=moss-rs
+    local repo=moss
     echo -e "\nBuilding and installing moss...\n"
     isGitRepo "$repo" || \
         failMsg "${repo} does not appear to be a serpent tooling repo?"
