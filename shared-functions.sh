@@ -34,7 +34,7 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
-CORE_REPOS['boulder']=main
+#CORE_REPOS['boulder']=main
 CORE_REPOS['img-tests']=main
 CORE_REPOS['libmoss']=main
 CORE_REPOS['moss']=main
@@ -279,7 +279,7 @@ function buildAllDLangTools ()
 function buildRustTools ()
 {
     local repo=moss
-    echo -e "\nBuilding and installing moss...\n"
+    echo -e "\nBuilding and installing moss and boulder...\n"
     isGitRepo "$repo" || \
         failMsg "${repo} does not appear to be a serpent tooling repo?"
     # Make the user deal with unclean git repos
@@ -289,16 +289,31 @@ function buildRustTools ()
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
     echo -e "\nConfiguring, building and installing ${repo} ...\n"
-    rm -v target/{debug,release}/moss
+    rm -v target/{debug,release}/{moss,boulder}
+    # moss
     cargo build -p moss && \
-      sudo install -Dm00755 target/debug/moss /usr/bin/moss
+      sudo install -Dm00755 target/debug/moss ${INSTALL_PREFIX}/bin/moss
     # error out noisily if any of the build steps fail
     if [[ $? -gt 0 ]]; then
-        failMsg "\n  Building ${1} failed!\n  '- Aborting!\n"
+        failMsg "\n  Building moss failed!\n  '- Aborting!\n"
     fi
-    popd    
     echo -e "\nSuccessfully built and installed moss:\n"
     ls -lF ${INSTALL_PREFIX}/bin/moss
+
+    # boulder
+    cargo build -p boulder && \
+      sudo install -Dm00755 target/debug/moss ${INSTALL_PREFIX}/bin/boulder && \
+      sudo mkdir -pv ${INSTALL_PREFIX}/share/boulder && \
+      sudo cp -vr boulder/data ${INSTALL_PREFIX}/share/boulder/
+    # error out noisily if any of the build steps fail
+    if [[ $? -gt 0 ]]; then
+        failMsg "\n  Building boulder failed!\n  '- Aborting!\n"
+    fi
+    echo -e "\nSuccessfully built and installed boulder:\n"
+    ls -lF ${INSTALL_PREFIX}/bin/boulder
+    ls -lF ${INSTALL_PREFIX}/share/boulder
+    # done
+    popd
 }
 
 function cleanTool ()
