@@ -305,6 +305,7 @@ function buildRustTools ()
       sudo install -Dm00755 target/debug/boulder ${INSTALL_PREFIX}/bin/boulder && \
       sudo rm -rf ${INSTALL_PREFIX}/share/boulder && \
       sudo mkdir -pv ${INSTALL_PREFIX}/share/boulder && \
+      echo -e "\nInstalling boulder data files...:\n" && \
       sudo cp -vr boulder/data ${INSTALL_PREFIX}/share/boulder/
     # error out noisily if any of the build steps fail
     if [[ $? -gt 0 ]]; then
