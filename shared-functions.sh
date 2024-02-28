@@ -34,7 +34,7 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
-#CORE_REPOS['boulder']=main
+CORE_REPOS['boulder']=main
 CORE_REPOS['img-tests']=main
 CORE_REPOS['libmoss']=main
 CORE_REPOS['moss']=main
@@ -268,11 +268,11 @@ function buildAllDLangTools ()
     # We can do this because this invocation doesn't touch existing
     # bin dir/symlink
     mkdir -pv ${INSTALL_PREFIX}/bin
-    echo -e "\nBuilding and installing moss-container and boulder...\n"
-    for repo in moss-container boulder; do
+    echo -e "\nBuilding and installing moss-container...\n"
+    for repo in moss-container; do
         buildDLangTool "$repo"
     done
-    echo -e "\nSuccessfully built and installed moss-container and boulder:\n"
+    echo -e "\nSuccessfully built and installed moss-container:\n"
     ls -lF ${INSTALL_PREFIX}/bin/{moss-container,boulder}
 }
 
@@ -302,7 +302,8 @@ function buildRustTools ()
 
     # boulder
     cargo build -p boulder && \
-      sudo install -Dm00755 target/debug/moss ${INSTALL_PREFIX}/bin/boulder && \
+      sudo install -Dm00755 target/debug/boulder ${INSTALL_PREFIX}/bin/boulder && \
+      sudo rm -rf ${INSTALL_PREFIX}/share/boulder && \
       sudo mkdir -pv ${INSTALL_PREFIX}/share/boulder && \
       sudo cp -vr boulder/data ${INSTALL_PREFIX}/share/boulder/
     # error out noisily if any of the build steps fail
