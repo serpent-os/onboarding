@@ -306,7 +306,7 @@ function buildRustTools ()
       sudo rm -rf ${INSTALL_PREFIX}/share/boulder && \
       sudo mkdir -pv ${INSTALL_PREFIX}/share/boulder && \
       echo -e "\nInstalling boulder data files...:\n" && \
-      sudo cp -vr boulder/data ${INSTALL_PREFIX}/share/boulder/
+      sudo cp -vr boulder/data/* ${INSTALL_PREFIX}/share/boulder/
     # error out noisily if any of the build steps fail
     if [[ $? -gt 0 ]]; then
         failMsg "\n  Building boulder failed!\n  '- Aborting!\n"
