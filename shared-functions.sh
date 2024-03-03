@@ -35,9 +35,9 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
-CORE_REPOS['img-tests']=main
+CORE_REPOS['img-tests']=lz4-squashfs
 CORE_REPOS['libmoss']=main
-CORE_REPOS['moss']=fix/blocking-mutex
+CORE_REPOS['moss']=main
 CORE_REPOS['moss-container']=main
 
 function failMsg()
@@ -293,8 +293,11 @@ function buildRustTools ()
     echo -e "\nConfiguring, building and installing ${repo} ...\n"
     rm -v target/{debug,release}/{moss,boulder}
     # moss
-    cargo build -p moss && \
-      sudo install -Dm00755 target/debug/moss ${INSTALL_PREFIX}/bin/moss
+    cargo build -p moss --release \
+        --config profile.release.debug=\"full\" \
+        --config profile.release.split-debuginfo=\"off\" \
+        --config profile.release.strip=\"none\" && \
+      sudo install -Dm00755 target/release/moss ${INSTALL_PREFIX}/bin/moss
     # error out noisily if any of the build steps fail
     if [[ $? -gt 0 ]]; then
         failMsg "\n  Building moss failed!\n  '- Aborting!\n"
@@ -303,8 +306,11 @@ function buildRustTools ()
     ls -lF ${INSTALL_PREFIX}/bin/moss
 
     # boulder
-    cargo build -p boulder && \
-      sudo install -Dm00755 target/debug/boulder ${INSTALL_PREFIX}/bin/boulder && \
+    cargo build -p boulder --release \
+        --config profile.release.debug=\"full\" \
+        --config profile.release.split-debuginfo=\"off\" \
+        --config profile.release.strip=\"none\" && \
+      sudo install -Dm00755 target/release/boulder ${INSTALL_PREFIX}/bin/boulder && \
       sudo rm -rf ${INSTALL_PREFIX}/share/boulder && \
       sudo mkdir -pv ${INSTALL_PREFIX}/share/boulder && \
       echo -e "\nInstalling boulder data files...:\n" && \
