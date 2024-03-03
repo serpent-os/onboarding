@@ -288,6 +288,9 @@ function buildRustTools ()
     pushd "${repo}"
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
+    echo -e "\nCleaning out existing compilation artefacts (clean build) ...\n"
+    cargo clean -p moss
+    cargo clean -p boulder
     echo -e "\nConfiguring, building and installing ${repo} ...\n"
     rm -v target/{debug,release}/{moss,boulder}
     # moss
