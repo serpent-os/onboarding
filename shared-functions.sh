@@ -37,7 +37,7 @@ declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
 CORE_REPOS['img-tests']=main
 CORE_REPOS['libmoss']=main
-CORE_REPOS['moss']=main
+CORE_REPOS['moss']=fix/sqlite-serialized
 CORE_REPOS['moss-container']=main
 
 function failMsg()
@@ -288,9 +288,8 @@ function buildRustTools ()
     pushd "${repo}"
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
-    echo -e "\nCleaning out existing compilation artefacts (clean build) ...\n"
-    cargo clean -p moss
-    cargo clean -p boulder
+    echo -e "\nCleaning out existing compilation artefacts (cargo clean) ...\n"
+    cargo clean
     echo -e "\nConfiguring, building and installing ${repo} ...\n"
     rm -v target/{debug,release}/{moss,boulder}
     # moss
