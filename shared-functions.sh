@@ -37,7 +37,7 @@ declare -A CORE_REPOS
 CORE_REPOS['boulder']=main
 CORE_REPOS['img-tests']=main
 CORE_REPOS['libmoss']=main
-CORE_REPOS['moss']=fix/sqlite-serialized
+CORE_REPOS['moss']=fix/blocking-mutex
 CORE_REPOS['moss-container']=main
 
 function failMsg()
@@ -380,7 +380,7 @@ function pullRepo()
     isGitRepo "${1}" || \
         failMsg "${1} does not appear to be a valid repo for git pull? Aborting."
     checkGitStatusClean "${1}"
-    checkoutRef ${1}
+    checkoutRef "${1}"
 
     pushd "${1}"
     git pull --rebase --recurse-submodules
@@ -414,6 +414,7 @@ function checkoutRef ()
 {
     local branch="${CORE_REPOS[${1}]}"
     echo -e "\nChecking out the ${1} ${branch} branch/tag"
+    git -C "${1}" fetch
     git -C "${1}" checkout "${branch}" || \
         failMsg "- failed to git checkout the ${branch} branch/tag for ${1}!"
     echo ""
