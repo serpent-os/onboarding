@@ -1,4 +1,4 @@
-## Legacy onboarding scripts
+## Current onboarding documentation
 
 The current user-facing Serpent OS tooling onboarding documentation lives [here](https://github.com/serpent-os/moss).
 
