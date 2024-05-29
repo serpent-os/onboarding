@@ -1,6 +1,10 @@
+## Legacy onboarding scripts
+
+The current user-facing Serpent OS tooling onboarding documentation lives [here](https://github.com/serpent-os/moss).
+
 ## Description
 
-Onboarding documentation and convenience scripts for cloning/building/pulling/pushing the Serpent OS tooling.
+Legacy Onboarding documentation and convenience scripts for cloning/building/pulling/pushing the Serpent OS DLang tooling.
 
 For a general overview of the goals of Serpent OS and how to get in touch, see our [website](https://serpentos.com).
 
