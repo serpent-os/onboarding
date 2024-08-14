@@ -11,7 +11,8 @@ if [[ -n "${1}" ]]; then
 
 Usage: build-all.sh
 
-Build the 'moss', 'moss-container' and 'boulder' Serpent OS tools.
+Build the 'libmoss', 'moss-service', 'avalanche', 'summit' and 'vessel'
+Serpent OS services.
 
 NB: Please run the script from the serpent-os/ clone root directory containing
     the Serpent OS core git repos as cloned by 'clone-all.sh'.
@@ -25,4 +26,4 @@ ONBOARDING_DIR=$(dirname "${0}")
 
 source "${ONBOARDING_DIR}/shared-functions.sh"
 
-buildAllDlangTools && buildRustTools
+buildAllDlangTools

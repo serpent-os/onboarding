@@ -11,10 +11,10 @@ if [[ -n "${1}" ]]; then
 
 Usage: update-all.sh
 
-Clone or pull+rebase all the Serpent OS tool repositories.
+Clone or pull+rebase all the Serpent OS service repositories.
 
 Upon successful clone/pull operations, check prerequisites
-and (re)build the serpent tooling if the check passes.
+and (re)build the serpent services if the check passes.
 
 NB: Please run the script from the serpent-os/ git clone root.
 
@@ -28,5 +28,5 @@ ONBOARDING_DIR=$(dirname "${0}")
 source "${ONBOARDING_DIR}/shared-functions.sh"
 
 # fail up-front according to the principle of least astonishment
-checkPrereqs && updateAllRepos && time ( buildAllDLangTools && buildRustTools )
+checkPrereqs && updateAllRepos && time buildAllDLangTools
 updateUsage

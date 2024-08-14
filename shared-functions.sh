@@ -16,7 +16,7 @@ GH_NAMESPACE="${GH_NAMESPACE:-serpent-os}"
 echo -e "\nUsing GH_NAMESPACE: ${GH_NAMESPACE}"
 #
 # install prefix for tooling (allow environment override)
-INSTALL_PREFIX="${INSTALL_PREFIX:-/usr}"
+INSTALL_PREFIX="${INSTALL_PREFIX:-/usr/local}"
 echo -e "\nUsing INSTALL_PREFIX: ${INSTALL_PREFIX}"
 #
 ## Environment overrides END
@@ -34,11 +34,15 @@ HTTPS_PREFIX="https://github.com/${GH_NAMESPACE}"
 
 # Make it easier to selectively check out branches per project
 declare -A CORE_REPOS
-CORE_REPOS['boulder']=main
-CORE_REPOS['img-tests']=main
+CORE_REPOS['avalanche']=main
+#CORE_REPOS['boulder']=main
+#CORE_REPOS['img-tests']=main
 CORE_REPOS['libmoss']=main
-CORE_REPOS['moss']=main
-CORE_REPOS['moss-container']=main
+#CORE_REPOS['moss']=main
+#CORE_REPOS['moss-container']=main
+CORE_REPOS['moss-service']=main
+CORE_REPOS['summit']=main
+CORE_REPOS['vessel']=main
 
 function failMsg()
 {
@@ -79,7 +83,7 @@ function checkPrereqs()
     bin['Binutils']=ld
     bin['C compiler']=cc
     bin['CMake build tool']=cmake
-    bin['Rust Cargo package manager']=cargo
+    #bin['Rust Cargo package manager']=cargo
     bin['Codespell python tool']=codespell
     bin['Dlang code formatter']=dfmt
     bin['Dlang package manager']=dub
@@ -90,7 +94,7 @@ function checkPrereqs()
     bin['LDC D compiler v1.32.2']=ldc2
     bin['Meson build tool']=meson
     bin['Ninja build tool']=ninja
-    bin['Rust compiler']=rustc
+    #bin['Rust compiler']=rustc
     #bin['Rust code formatter']=rustfmt
     bin['Sudo']=sudo
 
@@ -133,12 +137,14 @@ function checkPrereqs()
     pc[dbus-1]='--atleast-version=1.14'
     #pc[libgit2]='--atleast-version=1.3.0'
     pc[libcurl]='--atleast-version=7.5'
+    pc[libsodium]='--atleast-version=1.0'
     pc[libxxhash]='--atleast-version=0.0.1'
     pc[libzstd]='--atleast-version=1'
     pc[mount]='--atleast-version=2.37'
+    pc[openssl]='--atleast-version=3.1'
     #pc[rocksdb]='--atleast-version=6.22'
     # upstream doesn't ship a .pc file -- it's patched in on major distros
-    #pc[lmdb]='--atleast-version=0.9'
+    pc[lmdb]='--atleast-version=0.9'
 
     for p in ${!pc[@]}; do
         echo "- ${p} -devel package:"
@@ -206,11 +212,11 @@ function checkPrereqs()
     fi
 }
 
-# Emit message if ${HOME}/bin is not in $PATH
+# Emit message if ${HOME}/.local/bin is not in $PATH
 function checkPath ()
 {
-    if [[ ! "${PATH}" =~ "${HOME}/bin" ]]; then
-        echo -e "\nRemember to add \${HOME}/bin to \$PATH \!\n"
+    if [[ ! "${PATH}" =~ "${HOME}/.local/bin" ]]; then
+        echo -e "\nRemember to add \${HOME}/.local/bin to \$PATH \!\n"
     fi
 }
 
@@ -253,9 +259,15 @@ function buildDLangTool ()
     echo -e "\nResetting ownership as a precaution ...\n"
     sudo chown -Rc ${USER}:${USER} *
     echo -e "\nConfiguring, building and installing ${1} ...\n"
-    ( meson setup -Dbuildtype=debugoptimized --prefix="${INSTALL_PREFIX}" --wipe build/ || meson setup --prefix="${INSTALL_PREFIX}" build/ ) && \
-    meson compile -C build/ ${JOBS:-} && \
-    sudo meson install --no-rebuild -C build/
+    if [[ -f meson.build ]]
+    then
+        ( meson setup -Dbuildtype=debugoptimized --prefix="${INSTALL_PREFIX}" --wipe build/ || meson setup --prefix="${INSTALL_PREFIX}" build/ ) && \
+        meson compile -C build/ ${JOBS:-} && \
+        sudo meson install --no-rebuild -C build/
+    elif [[ -f dub.json ]]
+    then
+        dub build --parallel
+    fi
     # error out noisily if any of the build steps fail
     if [[ $? -gt 0 ]]; then
         failMsg "\n  Building ${1} failed!\n  '- Aborting!\n"
@@ -268,12 +280,12 @@ function buildAllDLangTools ()
     # We can do this because this invocation doesn't touch existing
     # bin dir/symlink
     mkdir -pv ${INSTALL_PREFIX}/bin
-    echo -e "\nBuilding and installing moss-container and boulder...\n"
-    for repo in moss-container boulder; do
+    echo -e "\nBuilding and installing libmoss, moss-service, avalanche, vessel and summit...\n"
+    for repo in libmoss moss-service avalanche vessel summit; do
         buildDLangTool "$repo"
     done
-    echo -e "\nSuccessfully built and installed moss-container and boulder:\n"
-    ls -lF ${INSTALL_PREFIX}/bin/{moss-container,boulder}
+    echo -e "\nSuccessfully built libmoss, moss-service, avalanche, vessel and summit.\n"
+    #ls -lF ${INSTALL_PREFIX}/bin/{avalanche,vessel,summit}
 }
 
 function buildRustTools ()
@@ -472,14 +484,14 @@ function updateUsage ()
     To check if all prerequisites are available on the local system,
     run 'onboarding/check-prereqs.sh'.
 
-    To build the currently checked out versions of the Serpent OS tooling,
+    To build the currently checked out versions of the Serpent OS service tooling,
     run 'onboarding/build-all.sh'.
 
     Developers with commit access can use 'onboarding/push-all.sh' to push all
     local changes in sequence when working on feature/topic branches.
 
-    To update all repos and build the newest version of the Serpent OS tooling,
-    simply run './update.sh' from the serpent-os/ clone root.
+    To update all repos and build the newest version of the Serpent OS service
+    tooling, simply run './update.sh' from the serpent-os/ clone root.
 
     Most people should only need to use './update.sh'.
     "
