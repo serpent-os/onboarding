@@ -41,6 +41,7 @@ CORE_REPOS['libmoss']=main
 #CORE_REPOS['moss']=main
 #CORE_REPOS['moss-container']=main
 CORE_REPOS['moss-service']=main
+CORE_REPOS['moss-vendor']=main
 CORE_REPOS['summit']=main
 CORE_REPOS['vessel']=main
 
